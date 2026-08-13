@@ -2,7 +2,7 @@
 
 @section('content')
 
-<!-<!-- ==========================================
+<!-- ==========================================
      HERO SECTION WITH VIDEO BACKGROUND
 =========================================== -->
 <section class="hero-section">
@@ -55,9 +55,9 @@
                 <div class="pillar-icon-wrapper">
                     <i class="fa-solid fa-microscope"></i>
                 </div>
-                <h3 class="pillar-title">RESEARCH</h3>
+                <h3 class="pillar-title">PENELITIAN</h3>
                 <p class="pillar-desc">
-                    Developing innovative studies in ergonomics, human integrated systems, and modern product design.
+                    Mengembangkan studi inovatif dalam bidang ergonomi, sistem terintegrasi manusia, dan perancangan produk modern.
                 </p>
             </div>
 
@@ -66,9 +66,9 @@
                 <div class="pillar-icon-wrapper">
                     <i class="fa-solid fa-graduation-cap"></i>
                 </div>
-                <h3 class="pillar-title">ACADEMIC</h3>
+                <h3 class="pillar-title">AKADEMIK</h3>
                 <p class="pillar-desc">
-                    Providing top-tier practical education, practicums, and student mentoring in industrial engineering.
+                    Menyelenggarakan pendidikan praktis berkualitas tinggi, praktikum, serta pembimbingan mahasiswa di bidang teknik industri.
                 </p>
             </div>
 
@@ -77,9 +77,9 @@
                 <div class="pillar-icon-wrapper">
                     <i class="fa-solid fa-handshake"></i>
                 </div>
-                <h3 class="pillar-title">COMMUNITY SERVICE</h3>
+                <h3 class="pillar-title">PENGABDIAN MASYARAKAT</h3>
                 <p class="pillar-desc">
-                    Applying industrial technology and ergonomic solutions directly to SMEs and the wider public.
+                    Menerapkan teknologi industri dan solusi ergonomi secara langsung kepada UMKM serta masyarakat luas.
                 </p>
             </div>
 
@@ -102,16 +102,13 @@
 
                     <!-- Judul Tebal & Tegas -->
                     <h2 class="about-hero-title">
-                        ERGONOMIC AND WORK SYSTEM DESIGN LABORATORY
+                        LABORATORIUM ERGONOMI DAN PERANCANGAN SISTEM KERJA
                     </h2>
 
                     <!-- Deskripsi Rapi -->
                     <div class="about-desc">
                         <p>
-                            Located within the Department of Industrial Engineering, Faculty of Engineering, Universitas Trunojoyo Madura, the <strong>EPSK Laboratory</strong> has been at the forefront of ergonomic research and product development since 2005.
-                        </p>
-                        <p>
-                            We focus on optimizing human well-being and overall system performance by applying ergonomic principles, work methodology engineering, physical simulation, and contemporary product design techniques.
+                            Laboratorium Ergonomi dan Perancangan Sistem Kerja Universitas Trunodjoyo Madura merupakan fasilitas akademik dan riset di bawah Program Studi Teknik Industri yang berfokus pada penerapan prinsip ergonomi, keselamatan kerja, dan desain sistem kerja yang efisien dan manusiawi. Laboratorium ini mendukung praktikum, penelitian, dan pengembangan teknologi berbasis sistem untuk meningkatkan produktivitas, efisiensi, kenyamanan, serta keselamatan dan kesehatan kerja (K3).
                         </p>
                     </div>
                 </div>
@@ -125,15 +122,15 @@
             <!-- Right Side: Image Slider -->
             <div class="slider-wrapper">
                 <div id="imageSlider" class="slider-container">
-                    <div class="slide">
-                        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80" alt="Laboratory Team 1">
-                    </div>
-                    <div class="slide">
-                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1000&q=80" alt="Laboratory Practicum 2">
-                    </div>
-                    <div class="slide">
-                        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1000&q=80" alt="Research Activity 3">
-                    </div>
+                    @forelse($sliders as $slider)
+                        <div class="slide">
+                            <img src="{{ Str::startsWith($slider->image_path, 'http') ? $slider->image_path : asset('storage/' . $slider->image_path) }}" alt="{{ $slider->title }}">
+                        </div>
+                    @empty
+                        <div class="slide">
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1000&q=80" alt="Default Image">
+                        </div>
+                    @endforelse
                 </div>
 
                 <!-- Navigation Controls -->
@@ -171,27 +168,27 @@
                 <div>
                     <!-- Thumbnail -->
                     <div class="news-image-wrapper">
-                        <img src="{{ $news['image'] }}" alt="{{ $news['title'] }}" class="news-image">
+                        <img src="{{ Str::startsWith($news->image, 'http') ? $news->image : asset('storage/' . $news->image) }}" alt="{{ $news->title }}" class="news-image">
                         <span class="news-category-badge">
-                            {{ $news['category'] }}
+                            {{ $news->category_name }}
                         </span>
                     </div>
 
                     <!-- Meta & Content -->
                     <div class="news-card-body">
                         <div class="news-meta">
-                            <span><i class="fa-regular fa-calendar"></i> {{ $news['date'] }}</span>
-                            <span><i class="fa-regular fa-user"></i> {{ $news['author'] }}</span>
+                            <span><i class="fa-regular fa-calendar"></i> {{ \Carbon\Carbon::parse($news->published_at)->format('d M Y') }}</span>
+                            <span><i class="fa-regular fa-user"></i> Admin</span>
                         </div>
                         <h3 class="news-title">
-                            {{ $news['title'] }}
+                            {{ $news->title }}
                         </h3>
                     </div>
                 </div>
 
                 <!-- Read More Button -->
                 <div class="news-card-footer">
-                    <a href="#" class="btn-read-more">
+                    <a href="{{ url('/news/' . $news->slug) }}" class="btn-read-more">
                         READ MORE
                     </a>
                 </div>
@@ -235,7 +232,7 @@
                             <div>
                                 <h4 class="contact-item-title">Address</h4>
                                 <p class="contact-item-text">
-                                    Perumahan Telang Inda, Telang, Kec. Kamal, Kabupaten Bangkalan, Jawa Timur 69162
+                                    {{ $settings['contact_address'] ?? 'Perumahan Telang Indah, Bangkalan' }}
                                 </p>
                             </div>
                         </div>
@@ -246,29 +243,28 @@
                             </div>
                             <div>
                                 <h4 class="contact-item-title">Email</h4>
-                                <p class="contact-item-text">epsk.trunojoyo@gmail.com</p>
+                                <p class="contact-item-text">{{ $settings['contact_email'] ?? 'epsk.trunojoyo@gmail.com' }}</p>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Social Media Buttons -->
-                <div>
-                    <h4 class="social-media-title">Follow Our Social Media</h4>
-                    <div class="social-links">
-                        <a href="https://www.linkedin.com/company/laboratorium-ergonomi-dan-perancangan-sistem-kerja/" target="_blank" class="social-btn li">
-                            <i class="fa-brands fa-linkedin-in"></i>
-                        </a>
-                        <a href="https://www.instagram.com/epsk.trunojoyo?igsh=MW80Ymx4MDg3dnNtdQ==" target="_blank" class="social-btn ig">
-                            <i class="fa-brands fa-instagram"></i>
-                        </a>
-                        <!-- TikTok Button -->
-                        <a href="https://www.tiktok.com/@epsk.trunojoyo?_r=1&_t=ZS-98eIrGucmqj" target="_blank" class="social-btn tt">
-                            <i class="fa-brands fa-tiktok"></i>
-                        </a>
-                        <a href="https://youtube.com/@lab.epsktrunojoyo6071?si=Oc7izSAmZenv-5pw" target="_blank" class="social-btn yt">
-                            <i class="fa-brands fa-youtube"></i>
-                        </a>
+                    <!-- Social Media Buttons -->
+                    <div>
+                        <h4 class="social-media-title">Follow Our Social Media</h4>
+                        <div class="social-links">
+                            <a href="{{ $settings['social_linkedin'] ?? '#' }}" target="_blank" class="social-btn li">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+                            <a href="{{ $settings['social_instagram'] ?? '#' }}" target="_blank" class="social-btn ig">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+                            <a href="{{ $settings['social_tiktok'] ?? '#' }}" target="_blank" class="social-btn tt">
+                                <i class="fa-brands fa-tiktok"></i>
+                            </a>
+                            <a href="{{ $settings['social_youtube'] ?? '#' }}" target="_blank" class="social-btn yt">
+                                <i class="fa-brands fa-youtube"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
