@@ -93,10 +93,10 @@
         <!-- Profile Dropdown -->
         <div class="relative" x-data="{ open: false }">
             <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2.5 rounded-lg py-1 pl-1 pr-2 hover:bg-slate-100">
-                <img src="https://ui-avatars.com/api/?name=Admin+EPSK&background=6B1C1C&color=fff&bold=true" alt="Avatar" class="h-8 w-8 rounded-full">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=6B1C1C&color=fff&bold=true" alt="Avatar" class="h-8 w-8 rounded-full">
                 <span class="hidden text-left leading-tight sm:block">
-                    <span class="block text-sm font-semibold text-slate-700">Admin EPSK</span>
-                    <span class="inline-flex items-center rounded-full bg-maroon-50 px-1.5 py-0.5 text-[10px] font-semibold text-maroon-600">Admin</span>
+                    <span class="block text-sm font-semibold text-slate-700">{{ auth()->user()->name }}</span>
+                    <span class="inline-flex items-center rounded-full bg-maroon-50 px-1.5 py-0.5 text-[10px] font-semibold text-maroon-600">{{ ucfirst(auth()->user()->role) }}</span>
                 </span>
                 <i class="fa-solid fa-chevron-down hidden text-[10px] text-slate-400 sm:block"></i>
             </button>
@@ -104,8 +104,8 @@
             <div x-cloak x-show="open" x-transition
                 class="absolute right-0 z-30 mt-2 w-52 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-xl">
                 <div class="border-b border-slate-100 px-4 py-2.5">
-                    <p class="truncate text-sm font-semibold text-slate-700">Admin EPSK</p>
-                    <p class="truncate text-xs text-slate-400">{{ auth()->user()->email ?? 'admin@epsk.trunojoyo.ac.id' }}</p>
+                    <p class="truncate text-sm font-semibold text-slate-700">{{ auth()->user()->name }}</p>
+                    <p class="truncate text-xs text-slate-400">{{ '@' . auth()->user()->username }}</p>
                 </div>
                 <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-user w-4 text-slate-400"></i> Edit Profil
@@ -113,7 +113,7 @@
                 <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-gear w-4 text-slate-400"></i> Pengaturan
                 </a>
-                <form method="POST" action="#" class="border-t border-slate-100">
+                <form method="POST" action="{{ route('logout') }}" class="border-t border-slate-100">
                     @csrf
                     <button type="submit" class="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                         <i class="fa-solid fa-right-from-bracket w-4"></i> Logout
