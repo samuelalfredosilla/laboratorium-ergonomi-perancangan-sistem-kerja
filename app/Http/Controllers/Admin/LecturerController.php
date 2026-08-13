@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lecturer;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -51,6 +52,8 @@ class LecturerController extends Controller
         $lecturer = Lecturer::create($data);
         $this->syncRepeaters($lecturer, $request);
 
+        Notification::log('Dosen baru "' . $lecturer->name . '" ditambahkan.', 'fa-user-plus', 'success', route('admin.lecturers.index'));
+
         return redirect()->route('admin.lecturers.index')
             ->with('success', 'Dosen "' . $lecturer->name . '" berhasil ditambahkan.');
     }
@@ -69,6 +72,8 @@ class LecturerController extends Controller
         $lecturer->update($data);
         $this->syncRepeaters($lecturer, $request);
 
+        Notification::log('Data dosen "' . $lecturer->name . '" diperbarui.', 'fa-user-pen', 'maroon', route('admin.lecturers.index'));
+
         return redirect()->route('admin.lecturers.index')
             ->with('success', 'Data dosen "' . $lecturer->name . '" berhasil diperbarui.');
     }
@@ -81,6 +86,8 @@ class LecturerController extends Controller
 
         $name = $lecturer->name;
         $lecturer->delete();
+
+        Notification::log('Data dosen "' . $name . '" dihapus.', 'fa-user-xmark', 'danger', route('admin.lecturers.index'));
 
         return redirect()->route('admin.lecturers.index')
             ->with('success', 'Data dosen "' . $name . '" berhasil dihapus.');
