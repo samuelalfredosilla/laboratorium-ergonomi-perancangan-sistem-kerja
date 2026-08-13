@@ -3,42 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
     /**
      * Display the homepage.
      */
-    public function index(): View
+    public function index()
     {
-        // Mock Data untuk Latest News (Dapat diganti Eloquent Query nantinya)
-        $latestNews = [
-            [
-                'title' => 'OHS Training 2024: Occupational Health & Safety Standard in Ergonomics',
-                'category' => 'Training',
-                'author' => 'Admin EWDPI',
-                'date' => '12 Oct 2024',
-                'image' => 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80',
-                'slug' => 'ohs-training-2024'
-            ],
-            [
-                'title' => 'Sketchup & 3D Modeling Workshop for Product Innovation',
-                'category' => 'Workshop',
-                'author' => 'Admin EWDPI',
-                'date' => '05 Nov 2024',
-                'image' => 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&w=600&q=80',
-                'slug' => 'sketchup-training'
-            ],
-            [
-                'title' => 'My Magnum Opus: Industrial Design Exhibition & Final Showcase',
-                'category' => 'Exhibition',
-                'author' => 'Admin EWDPI',
-                'date' => '20 Dec 2024',
-                'image' => 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=600&q=80',
-                'slug' => 'my-magnum-opus'
-            ],
-        ];
+        // 1. Ambil data slider yang aktif
+        $sliders = DB::table('home_sliders')
+            ->where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->get();
 
-        return view('home', compact('latestNews'));
+        // 2. Ambil berita terbaru (join dengan tabel categories)
+        $latestNews = DB::table('news')
+            ->join('categories', 'news.category_id', '=', 'categories.id')
+            ->select('news.*', 'categories.name as category_name')
+            ->where('news.is_published', true)
+            ->orderBy('news.published_at', 'desc')
+            ->take(3)
+            ->get();
+
+        // 3. Ambil data settings kontak & sosial media
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+
+        return view('home', compact('sliders', 'latestNews', 'settings'));
     }
 }
