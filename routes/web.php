@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomeSliderController;
 use App\Http\Controllers\Admin\LecturerController;
 use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,9 @@ Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->mid
 // ADMIN PANEL ROUTES
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
     Route::prefix('lecturers')->name('lecturers.')->group(function () {
         Route::get('/', [LecturerController::class, 'index'])->name('index');

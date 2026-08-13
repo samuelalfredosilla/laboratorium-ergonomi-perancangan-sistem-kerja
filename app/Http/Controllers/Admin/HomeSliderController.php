@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\HomeSlider;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,12 +24,14 @@ class HomeSliderController extends Controller
             'image' => ['required', 'image', 'max:4096'],
         ]);
 
-        HomeSlider::create([
+        $slider = HomeSlider::create([
             'title' => $validated['title'] ?? null,
             'image_path' => $request->file('image')->store('sliders', 'public'),
             'is_active' => $request->boolean('is_active'),
             'sort_order' => (int) HomeSlider::max('sort_order') + 1,
         ]);
+
+        Notification::log('Slider "' . ($slider->title ?: 'Tanpa judul') . '" ditambahkan.', 'fa-images', 'success', route('admin.sliders.index'));
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider berhasil ditambahkan.');
     }
@@ -52,13 +55,18 @@ class HomeSliderController extends Controller
 
         $slider->update($data);
 
+        Notification::log('Slider "' . ($slider->title ?: 'Tanpa judul') . '" diperbarui.', 'fa-images', 'maroon', route('admin.sliders.index'));
+
         return redirect()->route('admin.sliders.index')->with('success', 'Slider berhasil diperbarui.');
     }
 
     public function destroy(HomeSlider $slider)
     {
         Storage::disk('public')->delete($slider->image_path);
+        $title = $slider->title ?: 'Tanpa judul';
         $slider->delete();
+
+        Notification::log('Slider "' . $title . '" dihapus.', 'fa-trash-can', 'danger', route('admin.sliders.index'));
 
         return redirect()->route('admin.sliders.index')->with('success', 'Slider berhasil dihapus.');
     }
@@ -66,6 +74,13 @@ class HomeSliderController extends Controller
     public function toggle(HomeSlider $slider)
     {
         $slider->update(['is_active' => ! $slider->is_active]);
+
+        Notification::log(
+            'Slider "' . ($slider->title ?: 'Tanpa judul') . '" ' . ($slider->is_active ? 'diaktifkan.' : 'dinonaktifkan.'),
+            $slider->is_active ? 'fa-eye' : 'fa-eye-slash',
+            $slider->is_active ? 'success' : 'warning',
+            route('admin.sliders.index')
+        );
 
         return back()->with('success', $slider->is_active ? 'Slider diaktifkan.' : 'Slider dinonaktifkan.');
     }
@@ -80,6 +95,8 @@ class HomeSliderController extends Controller
         foreach ($validated['order'] as $index => $id) {
             HomeSlider::where('id', $id)->update(['sort_order' => $index + 1]);
         }
+
+        Notification::log('Urutan slider banner diperbarui.', 'fa-arrows-up-down', 'maroon', route('admin.sliders.index'));
 
         return response()->json(['status' => 'ok']);
     }

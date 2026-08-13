@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -27,6 +28,8 @@ class CategoryController extends Controller
             'slug' => $this->uniqueSlug($validated['name']),
         ]);
 
+        Notification::log('Kategori "' . $validated['name'] . '" ditambahkan.', 'fa-tags', 'success', route('admin.categories.index'));
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori "' . $validated['name'] . '" berhasil ditambahkan.');
     }
@@ -44,6 +47,8 @@ class CategoryController extends Controller
                 : $this->uniqueSlug($validated['name'], $category->id),
         ]);
 
+        Notification::log('Kategori "' . $validated['name'] . '" diperbarui.', 'fa-tags', 'maroon', route('admin.categories.index'));
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori "' . $validated['name'] . '" berhasil diperbarui.');
     }
@@ -57,6 +62,8 @@ class CategoryController extends Controller
         $message = $newsCount > 0
             ? "Kategori \"{$name}\" beserta {$newsCount} berita di dalamnya berhasil dihapus."
             : "Kategori \"{$name}\" berhasil dihapus.";
+
+        Notification::log($message, 'fa-trash-can', 'danger', route('admin.categories.index'));
 
         return redirect()->route('admin.categories.index')->with('success', $message);
     }
