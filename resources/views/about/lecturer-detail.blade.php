@@ -30,11 +30,11 @@
                     <img src="{{ Str::startsWith($lecturer->photo, 'http') ? $lecturer->photo : asset('storage/' . $lecturer->photo) }}"
                          alt="{{ $lecturer->name }}"
                          class="profile-avatar-img">
-
-                    @if($lecturer->role)
-                        <span class="profile-role-badge">{{ $lecturer->role }}</span>
-                    @endif
                 </div>
+
+                @if($lecturer->role)
+                    <span class="profile-role-badge">{{ $lecturer->role }}</span>
+                @endif
 
                 <h2 class="profile-name">{{ $lecturer->name }}</h2>
                 <p class="profile-nip">NIP. {{ $lecturer->nip ?? '-' }}</p>
