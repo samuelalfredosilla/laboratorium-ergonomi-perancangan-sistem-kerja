@@ -10,7 +10,7 @@
         [
             'label' => 'Management',
             'items' => [
-                ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => null],
+                ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => 'admin.lecturers.index'],
                 ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => null],
                 ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => null],
                 ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => null],
