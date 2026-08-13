@@ -90,7 +90,7 @@
         <div class="rounded-xl border border-slate-200 bg-white shadow-soft lg:col-span-2">
             <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <h2 class="text-sm font-bold text-slate-700">Berita Terbaru</h2>
-                <a href="#" class="text-xs font-semibold text-maroon-600 hover:underline">Lihat semua &rarr;</a>
+                <a href="{{ route('admin.news.index') }}" class="text-xs font-semibold text-maroon-600 hover:underline">Lihat semua &rarr;</a>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm">
@@ -145,11 +145,11 @@
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-maroon-50 text-maroon-600"><i class="fa-solid fa-user-plus"></i></span>
                         Tambah Dosen Baru
                     </a>
-                    <a href="#" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600">
+                    <a href="{{ route('admin.news.create') }}" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600">
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600"><i class="fa-solid fa-pen-nib"></i></span>
                         Buat Berita Baru
                     </a>
-                    <a href="#" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-sky-200 hover:bg-sky-50 hover:text-sky-600">
+                    <a href="{{ route('admin.sliders.index') }}" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-sky-200 hover:bg-sky-50 hover:text-sky-600">
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-50 text-sky-600"><i class="fa-solid fa-image"></i></span>
                         Upload Slider Baru
                     </a>
