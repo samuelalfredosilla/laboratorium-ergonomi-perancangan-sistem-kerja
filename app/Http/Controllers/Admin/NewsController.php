@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\News;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -46,6 +47,8 @@ class NewsController extends Controller
 
         $news = News::create($data);
 
+        Notification::log('Berita baru "' . $news->title . '" ditambahkan.', 'fa-newspaper', 'success', route('admin.news.index'));
+
         return redirect()->route('admin.news.index')->with('success', 'Berita "' . $news->title . '" berhasil disimpan.');
     }
 
@@ -73,6 +76,8 @@ class NewsController extends Controller
 
         $news->update($data);
 
+        Notification::log('Berita "' . $news->title . '" diperbarui.', 'fa-newspaper', 'maroon', route('admin.news.index'));
+
         return redirect()->route('admin.news.index')->with('success', 'Berita "' . $news->title . '" berhasil diperbarui.');
     }
 
@@ -85,12 +90,21 @@ class NewsController extends Controller
         $title = $news->title;
         $news->delete();
 
+        Notification::log('Berita "' . $title . '" dihapus.', 'fa-trash-can', 'danger', route('admin.news.index'));
+
         return redirect()->route('admin.news.index')->with('success', 'Berita "' . $title . '" berhasil dihapus.');
     }
 
     public function toggle(News $news)
     {
         $news->update(['is_published' => ! $news->is_published]);
+
+        Notification::log(
+            'Berita "' . $news->title . '" ' . ($news->is_published ? 'dipublikasikan.' : 'dijadikan draft.'),
+            $news->is_published ? 'fa-eye' : 'fa-eye-slash',
+            $news->is_published ? 'success' : 'warning',
+            route('admin.news.index')
+        );
 
         return back()->with('success', $news->is_published ? 'Berita dipublikasikan.' : 'Berita disimpan sebagai draft.');
     }
