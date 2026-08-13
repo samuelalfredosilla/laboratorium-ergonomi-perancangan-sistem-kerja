@@ -11,9 +11,9 @@
             'label' => 'Management',
             'items' => [
                 ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => 'admin.lecturers.index'],
-                ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => null],
-                ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => null],
-                ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => null],
+                ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => 'admin.news.index', 'active' => 'admin.news.*'],
+                ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => 'admin.categories.index'],
+                ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => 'admin.sliders.index'],
             ],
         ],
         [
@@ -59,7 +59,7 @@
                 @endif
                 <ul class="space-y-1">
                     @foreach ($group['items'] as $item)
-                        @php $active = $item['route'] && request()->routeIs($item['route']); @endphp
+                        @php $active = $item['route'] && request()->routeIs($item['active'] ?? $item['route']); @endphp
                         <li>
                             <a
                                 href="{{ $item['route'] ? route($item['route']) : '#' }}"

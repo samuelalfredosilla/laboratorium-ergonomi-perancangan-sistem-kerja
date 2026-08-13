@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') · EPSK Admin Panel</title>
 
     <!-- Favicon -->
@@ -88,6 +89,19 @@
 
     <!-- Toast Notification Container -->
     @include('admin.partials.toast')
+
+    @if (session('success') || session('error'))
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                window.dispatchEvent(new CustomEvent('toast', {
+                    detail: {
+                        type: '{{ session('success') ? 'success' : 'error' }}',
+                        message: @json(session('success') ?? session('error')),
+                    },
+                }));
+            });
+        </script>
+    @endif
 
     @stack('modals')
     @stack('scripts')
