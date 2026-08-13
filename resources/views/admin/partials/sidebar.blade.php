@@ -84,10 +84,10 @@
     <!-- Footer mini profile -->
     <div class="border-t border-slate-200 p-4">
         <div class="flex items-center gap-3 rounded-lg bg-maroon-50 px-3 py-2.5">
-            <img src="https://ui-avatars.com/api/?name=Admin+EPSK&background=6B1C1C&color=fff&bold=true" alt="Avatar" class="h-8 w-8 rounded-full">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=6B1C1C&color=fff&bold=true" alt="Avatar" class="h-8 w-8 rounded-full">
             <div class="min-w-0 leading-tight">
-                <p class="truncate text-xs font-semibold text-slate-700">Admin EPSK</p>
-                <p class="truncate text-[11px] text-maroon-500">Super Admin</p>
+                <p class="truncate text-xs font-semibold text-slate-700">{{ auth()->user()->name }}</p>
+                <p class="truncate text-[11px] text-maroon-500">{{ ucfirst(auth()->user()->role) }}</p>
             </div>
         </div>
     </div>
