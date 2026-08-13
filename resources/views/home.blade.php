@@ -188,7 +188,7 @@
 
                 <!-- Read More Button -->
                 <div class="news-card-footer">
-                    <a href="{{ url('/news/' . $news->slug) }}" class="btn-read-more">
+                    <a href="{{ route('news.show', $news->slug) }}" class="btn-read-more">
                         READ MORE
                     </a>
                 </div>
@@ -198,7 +198,7 @@
 
         <!-- See More Button (Inside Maroon Area) -->
         <div class="news-see-more-wrapper">
-            <a href="#" class="btn-see-more">
+            <a href="{{ route('news.index') }}" class="btn-see-more">
                 SEE MORE
                 <i class="fa-solid fa-angles-right"></i>
             </a>
