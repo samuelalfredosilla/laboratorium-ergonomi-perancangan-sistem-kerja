@@ -38,10 +38,10 @@
                 <a href="{{ route('admin.lecturers.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-user-plus w-4 text-slate-400"></i> Tambah Dosen
                 </a>
-                <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
+                <a href="{{ route('admin.news.create') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-pen-nib w-4 text-slate-400"></i> Buat Berita
                 </a>
-                <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
+                <a href="{{ route('admin.sliders.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-image w-4 text-slate-400"></i> Upload Slider
                 </a>
             </div>
