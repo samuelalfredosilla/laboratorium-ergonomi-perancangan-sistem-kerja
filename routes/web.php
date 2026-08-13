@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\NewsController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\NewsController as PublicNewsController;
 use Illuminate\Support\Facades\Route;
 
 // HOME PAGE ROUTE
@@ -19,6 +20,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about/overview', [AboutController::class, 'overview'])->name('about.overview');
 Route::get('/about/lecturer', [AboutController::class, 'lecturers'])->name('about.lecturer');
 Route::get('/about/lecturer/{id}', [AboutController::class, 'lecturerDetail'])->name('about.lecturer-detail');
+
+// PUBLIC NEWS ROUTES
+Route::get('/news', [PublicNewsController::class, 'index'])->name('news.index');
+Route::get('/news/{news:slug}', [PublicNewsController::class, 'show'])->name('news.show');
 
 // AUTH ROUTES
 Route::middleware('guest')->group(function () {
