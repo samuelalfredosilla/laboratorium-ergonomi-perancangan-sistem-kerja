@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomeSliderController;
 use App\Http\Controllers\Admin\LecturerController;
 use App\Http\Controllers\Admin\NewsController;
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
 // HOME PAGE ROUTE
@@ -17,8 +18,15 @@ Route::get('/about/overview', [AboutController::class, 'overview'])->name('about
 Route::get('/about/lecturer', [AboutController::class, 'lecturers'])->name('about.lecturer');
 Route::get('/about/lecturer/{id}', [AboutController::class, 'lecturerDetail'])->name('about.lecturer-detail');
 
+// AUTH ROUTES
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::post('/login', [LoginController::class, 'store'])->name('login.attempt');
+});
+Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
+
 // ADMIN PANEL ROUTES
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::prefix('lecturers')->name('lecturers.')->group(function () {
