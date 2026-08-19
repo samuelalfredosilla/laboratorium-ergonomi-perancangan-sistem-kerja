@@ -4,8 +4,8 @@
     $notifColorMap = [
         'success' => 'bg-emerald-50 text-emerald-600',
         'warning' => 'bg-amber-50 text-amber-600',
-        'danger' => 'bg-red-50 text-red-600',
-        'maroon' => 'bg-maroon-50 text-maroon-600',
+        'danger'  => 'bg-red-50 text-red-600',
+        'maroon'  => 'bg-maroon-50 text-maroon-600',
     ];
 @endphp
 <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-white/90 px-4 backdrop-blur sm:px-6 lg:px-8">
@@ -119,8 +119,11 @@
                 <a href="{{ route('admin.lecturers.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-user-plus w-4 text-slate-400"></i> Tambah Dosen
                 </a>
-                <a href="{{ route('admin.news.create') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
-                    <i class="fa-solid fa-pen-nib w-4 text-slate-400"></i> Buat Berita
+                <a href="{{ route('admin.assistants.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
+                    <i class="fa-solid fa-user-check w-4 text-slate-400"></i> Tambah Asisten
+                </a>
+                <a href="{{ route('admin.news.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
+                    <i class="fa-solid fa-newspaper w-4 text-slate-400"></i> Tulis Berita
                 </a>
                 <a href="{{ route('admin.sliders.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-image w-4 text-slate-400"></i> Upload Slider

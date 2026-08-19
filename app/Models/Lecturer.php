@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use App\Models\ActivityLog;
 
 class Lecturer extends Model
 {
@@ -40,5 +41,12 @@ class Lecturer extends Model
         }
 
         return Str::startsWith($this->photo, 'http') ? $this->photo : asset('storage/' . $this->photo);
+    }
+
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class, 'subject_id')
+            ->where('subject_type', self::class)
+            ->latest();
     }
 }

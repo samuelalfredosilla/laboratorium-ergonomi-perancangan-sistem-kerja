@@ -5,15 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class News extends Model
 {
     use HasFactory;
 
+    protected $table = 'news';
+
     protected $fillable = [
-        'category_id', 'user_id', 'title', 'slug', 'image',
-        'content', 'is_published', 'published_at',
+        'category_id',
+        'user_id',
+        'title',
+        'slug',
+        'image',
+        'content',
+        'is_published',
+        'published_at',
     ];
 
     protected $casts = [
@@ -40,5 +49,15 @@ class News extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke Riwayat Perubahan (Activity Log)
+     */
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class, 'subject_id')
+            ->where('subject_type', self::class)
+            ->latest();
     }
 }

@@ -19,7 +19,7 @@
         [
             'label' => 'Lab Assets & Services',
             'items' => [
-                ['label' => 'EPSIKERS / Assistants', 'icon' => 'fa-user-check', 'route' => null],
+                ['label' => 'EPSIKERS / Assistants', 'icon' => 'fa-user-check', 'route' => 'admin.assistants.index', 'active' => 'admin.assistants.*'],
                 ['label' => 'Facilities & Tools', 'icon' => 'fa-boxes-stacked', 'route' => null],
                 ['label' => 'Lab Requests / Services', 'icon' => 'fa-clipboard-list', 'route' => null],
             ],

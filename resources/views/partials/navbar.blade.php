@@ -27,7 +27,7 @@
                 <div class="dropdown-menu">
                     <a href="{{ route('about.overview') }}" class="dropdown-item {{ request()->routeIs('about.overview') ? 'active-item' : '' }}">OVERVIEW</a>
                     <a href="{{ route('about.lecturer') }}" class="dropdown-item {{ request()->routeIs('about.lecturer') ? 'active-item' : '' }}">PROFILE LECTURER</a>
-                    <a href="#about-assistants" class="dropdown-item">EPSIKERS</a>
+                    <a href="{{ route('about.epsikers') }}" class="dropdown-item {{ request()->routeIs('about.epsikers') ? 'active-item' : '' }}">EPSIKERS</a>
                     <a href="#about-structure" class="dropdown-item">STRUCTURE ORGANIZATION</a>
                 </div>
             </div>

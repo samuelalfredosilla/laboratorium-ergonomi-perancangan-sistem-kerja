@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssistantPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Assistant;
 
 class AboutController extends Controller
 {
@@ -50,5 +52,24 @@ class AboutController extends Controller
             ->get();
 
         return view('about.lecturer-detail', compact('lecturer', 'educations', 'researches', 'communityServices'));
+    }
+
+    /**
+     * Menampilkan Halaman Asisten Lab (EPSIKERS) dari Database
+     */
+    public function epsikers()
+    {
+        // Ambil periode yang diaktifkan oleh admin di panel kelola periode
+        $activePeriod = AssistantPeriod::where('is_active', true)->first()
+            ?? AssistantPeriod::orderBy('name', 'desc')->first();
+
+        $selectedPeriod = $activePeriod ? $activePeriod->name : '2025/2026';
+
+        // Ambil asisten pada periode aktif tersebut
+        $assistants = Assistant::where('period', $selectedPeriod)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        return view('about.epsikers', compact('assistants', 'selectedPeriod'));
     }
 }

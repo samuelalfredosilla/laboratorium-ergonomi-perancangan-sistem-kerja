@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\Admin\AssistantController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\HomeSliderController;
@@ -13,32 +14,44 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\NewsController as PublicNewsController;
 use Illuminate\Support\Facades\Route;
 
-// HOME PAGE ROUTE
+// ==========================================
+// PUBLIC ROUTES
+// ==========================================
+
+// Home Route
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// ABOUT PAGE ROUTES
-Route::get('/about/overview', [AboutController::class, 'overview'])->name('about.overview');
-Route::get('/about/lecturer', [AboutController::class, 'lecturers'])->name('about.lecturer');
-Route::get('/about/lecturer/{id}', [AboutController::class, 'lecturerDetail'])->name('about.lecturer-detail');
+// About Routes
+Route::prefix('about')->name('about.')->group(function () {
+    Route::get('/overview', [AboutController::class, 'overview'])->name('overview');
+    Route::get('/lecturer', [AboutController::class, 'lecturers'])->name('lecturer');
+    Route::get('/lecturer/{id}', [AboutController::class, 'lecturerDetail'])->name('lecturer-detail');
+    Route::get('/epsikers', [AboutController::class, 'epsikers'])->name('epsikers');
+});
 
-// PUBLIC NEWS ROUTES
+// Public News Routes
 Route::get('/news', [PublicNewsController::class, 'index'])->name('news.index');
 Route::get('/news/{news:slug}', [PublicNewsController::class, 'show'])->name('news.show');
 
-// AUTH ROUTES
+// ==========================================
+// AUTHENTICATION ROUTES
+// ==========================================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login.attempt');
 });
 Route::post('/logout', [LoginController::class, 'destroy'])->name('logout')->middleware('auth');
 
+// ==========================================
 // ADMIN PANEL ROUTES
+// ==========================================
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    // Dashboard, Search, & Global Notifications
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
     Route::get('/search', [SearchController::class, 'index'])->name('search');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
+    // 1. Lecturers & Staff
     Route::prefix('lecturers')->name('lecturers.')->group(function () {
         Route::get('/', [LecturerController::class, 'index'])->name('index');
         Route::post('/', [LecturerController::class, 'store'])->name('store');
@@ -47,16 +60,26 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::delete('/{lecturer}', [LecturerController::class, 'destroy'])->name('destroy');
     });
 
+    // Kelola Periode Asisten
+    Route::post('assistants/periods/store', [AssistantController::class, 'storePeriod'])->name('assistants.periods.store');
+    Route::put('assistants/periods/rename', [AssistantController::class, 'renamePeriod'])->name('assistants.periods.rename');
+    Route::delete('assistants/periods/destroy', [AssistantController::class, 'destroyPeriod'])->name('assistants.periods.destroy');
+    Route::patch('assistants/periods/{period}/toggle', [AssistantController::class, 'togglePeriod'])->name('assistants.periods.toggle');
+
+    // 2. EPSIKERS / Assistants
+    Route::resource('assistants', AssistantController::class);
+
+    // 3. News & Articles (Slide-Over Panel & Detail Show)
     Route::prefix('news')->name('news.')->group(function () {
         Route::get('/', [NewsController::class, 'index'])->name('index');
-        Route::get('/create', [NewsController::class, 'create'])->name('create');
         Route::post('/', [NewsController::class, 'store'])->name('store');
-        Route::get('/{news}/edit', [NewsController::class, 'edit'])->name('edit');
+        Route::get('/{news}', [NewsController::class, 'show'])->name('show');
         Route::put('/{news}', [NewsController::class, 'update'])->name('update');
         Route::delete('/{news}', [NewsController::class, 'destroy'])->name('destroy');
         Route::patch('/{news}/toggle', [NewsController::class, 'toggle'])->name('toggle');
     });
 
+    // 4. Categories Management
     Route::prefix('categories')->name('categories.')->group(function () {
         Route::get('/', [CategoryController::class, 'index'])->name('index');
         Route::post('/', [CategoryController::class, 'store'])->name('store');
@@ -64,6 +87,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
     });
 
+    // 5. Home Sliders
     Route::prefix('sliders')->name('sliders.')->group(function () {
         Route::get('/', [HomeSliderController::class, 'index'])->name('index');
         Route::post('/', [HomeSliderController::class, 'store'])->name('store');

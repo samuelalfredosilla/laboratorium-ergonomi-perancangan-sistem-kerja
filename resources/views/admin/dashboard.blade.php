@@ -11,7 +11,7 @@
             <h1 class="text-xl font-bold text-slate-800 sm:text-2xl">Dashboard Overview</h1>
             <p class="mt-1 text-sm text-slate-500">Ringkasan aktivitas Laboratorium EPSK &middot; {{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</p>
         </div>
-        <a href="#" class="inline-flex items-center gap-2 self-start rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-soft hover:border-maroon-200 hover:text-maroon-600">
+        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 self-start rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-soft hover:border-maroon-200 hover:text-maroon-600">
             <i class="fa-solid fa-arrows-rotate text-xs"></i> Refresh Data
         </a>
     </div>
@@ -78,7 +78,7 @@
                 </span>
             </div>
             <p class="mt-3 text-xs text-slate-500">
-                <span class="font-semibold text-violet-600">{{ $stats['assistants']['active'] }}</span> Aktif periode ini
+                <span class="font-semibold text-violet-600">{{ $stats['assistants']['active'] }}</span> Aktif (Periode {{ $stats['assistants']['latest_period'] }})
             </p>
         </div>
     </div>
@@ -109,7 +109,7 @@
                             <td class="px-5 py-3">
                                 <div class="flex items-center gap-3">
                                     <img src="{{ $news->image }}" alt="{{ $news->title }}" class="h-10 w-14 shrink-0 rounded-md object-cover ring-1 ring-slate-200">
-                                    <span class="line-clamp-2 max-w-[220px] font-medium text-slate-700">{{ $news->title }}</span>
+                                    <span class="line-clamp-2 max-w-55 font-medium text-slate-700">{{ $news->title }}</span>
                                 </div>
                             </td>
                             <td class="px-5 py-3">
@@ -118,14 +118,13 @@
                             <td class="px-5 py-3 text-slate-500">{{ $news->author }}</td>
                             <td class="px-5 py-3 whitespace-nowrap text-slate-500">{{ $news->date }}</td>
                             <td class="px-5 py-3">
-                                <div class="flex justify-center" x-data="{ on: {{ $news->published ? 'true' : 'false' }} }">
-                                    <button @click="on = !on" type="button"
-                                        class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
-                                        :class="on ? 'bg-emerald-500' : 'bg-slate-300'">
-                                        <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform"
-                                            :class="on ? 'translate-x-4' : 'translate-x-1'"></span>
+                                <form method="POST" action="{{ route('admin.news.toggle', $news->id) }}" class="flex justify-center">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors {{ $news->published ? 'bg-emerald-500' : 'bg-slate-300' }}">
+                                        <span class="inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform {{ $news->published ? 'translate-x-4' : 'translate-x-1' }}"></span>
                                     </button>
-                                </div>
+                                </form>
                             </td>
                         </tr>
                         @endforeach
@@ -145,7 +144,11 @@
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-maroon-50 text-maroon-600"><i class="fa-solid fa-user-plus"></i></span>
                         Tambah Dosen Baru
                     </a>
-                    <a href="{{ route('admin.news.create') }}" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600">
+                    <a href="{{ route('admin.assistants.index') }}" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-violet-200 hover:bg-violet-50 hover:text-violet-600">
+                        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-violet-600"><i class="fa-solid fa-user-check"></i></span>
+                        Tambah Asisten Baru
+                    </a>
+                    <a href="{{ route('admin.news.index') }}" class="flex items-center gap-3 rounded-lg border border-slate-100 px-3.5 py-3 text-sm font-medium text-slate-600 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600">
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600"><i class="fa-solid fa-pen-nib"></i></span>
                         Buat Berita Baru
                     </a>

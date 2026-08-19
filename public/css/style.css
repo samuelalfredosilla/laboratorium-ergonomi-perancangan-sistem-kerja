@@ -1781,3 +1781,168 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0.25rem;
     flex-shrink: 0;
 }
+
+/* ==========================================================================
+   EPSIKERS (4x4 GRID LAYOUT)
+   ========================================================================== */
+.epsikers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 Kolom Sejajar */
+    gap: 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.epsiker-card {
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.epsiker-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(107, 28, 28, 0.12);
+    border-color: #ebdada;
+}
+
+.epsiker-img-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Rasio persegi 1:1 */
+    background: #f8fafc;
+    overflow: hidden;
+}
+
+.epsiker-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.epsiker-card:hover .epsiker-img {
+    transform: scale(1.04);
+}
+
+.epsiker-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(107, 28, 28, 0.9);
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+    letter-spacing: 0.3px;
+}
+
+.epsiker-info {
+    padding: 1.2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.epsiker-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.epsiker-nim {
+    font-size: 0.82rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+}
+
+.epsiker-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin-bottom: 0.75rem;
+}
+
+.epsiker-contact-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #555555;
+    margin-top: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.epsiker-contact-row i {
+    color: #6B1C1C;
+    font-size: 0.85rem;
+}
+
+.epsiker-contact-row span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsif untuk Tablet & HP */
+@media (max-width: 1024px) {
+    .epsikers-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 Kolom di Tablet */
+    }
+}
+
+@media (max-width: 600px) {
+    .epsikers-grid {
+        grid-template-columns: 1fr; /* 1 Kolom di Layar HP */
+    }
+}
+
+/* SWITCHER PERIODE TERPADU DALAM SECTION INTRO */
+.period-inline-switcher {
+    margin-top: 1rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.period-switcher-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 0;
+}
+
+.period-switcher-label i {
+    color: #6B1C1C;
+}
+
+.period-select-inline {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #6B1C1C;
+    background-color: #ffffff;
+    border: 1.5px solid #ebdada;
+    border-radius: 20px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(107, 28, 28, 0.05);
+}
+
+.period-select-inline:hover,
+.period-select-inline:focus {
+    border-color: #6B1C1C;
+    box-shadow: 0 0 0 3px rgba(107, 28, 28, 0.12);
+}

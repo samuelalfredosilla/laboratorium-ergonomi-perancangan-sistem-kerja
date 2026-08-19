@@ -7,6 +7,7 @@ use App\Models\Lecturer;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ActivityLog;
 
 class LecturerController extends Controller
 {
@@ -36,7 +37,8 @@ class LecturerController extends Controller
 
     public function show(Lecturer $lecturer)
     {
-        $lecturer->load(['educations', 'researches', 'communityServices']);
+        // Load relasi termasuk activityLogs dan user pembuatnya
+        $lecturer->load(['educations', 'researches', 'communityServices', 'activityLogs.user']);
 
         return view('admin.lecturers.show', compact('lecturer'));
     }
@@ -52,7 +54,13 @@ class LecturerController extends Controller
         $lecturer = Lecturer::create($data);
         $this->syncRepeaters($lecturer, $request);
 
+        // Notifikasi Lonceng
         Notification::log('Dosen baru "' . $lecturer->name . '" ditambahkan.', 'fa-user-plus', 'success', route('admin.lecturers.index'));
+
+        // Catat ke Activity Log Database
+        ActivityLog::record($lecturer, 'created', 'Menambahkan dosen baru: ' . $lecturer->name, [
+            'attributes' => $lecturer->toArray(),
+        ]);
 
         return redirect()->route('admin.lecturers.index')
             ->with('success', 'Dosen "' . $lecturer->name . '" berhasil ditambahkan.');
@@ -69,25 +77,46 @@ class LecturerController extends Controller
             $data['photo'] = $request->file('photo')->store('lecturers', 'public');
         }
 
+        $oldValues = $lecturer->getOriginal();
         $lecturer->update($data);
         $this->syncRepeaters($lecturer, $request);
 
+        $changes = $lecturer->getChanges();
+        $oldChanges = array_intersect_key($oldValues, $changes);
+
+        // Notifikasi Lonceng
         Notification::log('Data dosen "' . $lecturer->name . '" diperbarui.', 'fa-user-pen', 'maroon', route('admin.lecturers.index'));
 
-        return redirect()->route('admin.lecturers.index')
+        // Catat ke Activity Log Database jika ada perubahan
+        if (!empty($changes)) {
+            ActivityLog::record($lecturer, 'updated', 'Memperbarui data dosen: ' . $lecturer->name, [
+                'old' => $oldChanges,
+                'new' => $changes,
+            ]);
+        }
+
+        return redirect()->back()
             ->with('success', 'Data dosen "' . $lecturer->name . '" berhasil diperbarui.');
     }
 
     public function destroy(Lecturer $lecturer)
     {
+        $name = $lecturer->name;
+        $backupData = $lecturer->toArray();
+
         if ($lecturer->photo) {
             Storage::disk('public')->delete($lecturer->photo);
         }
 
-        $name = $lecturer->name;
         $lecturer->delete();
 
+        // Notifikasi Lonceng
         Notification::log('Data dosen "' . $name . '" dihapus.', 'fa-user-xmark', 'danger', route('admin.lecturers.index'));
+
+        // Catat ke Activity Log Database
+        ActivityLog::record($lecturer, 'deleted', 'Menghapus data dosen: ' . $name, [
+            'attributes' => $backupData,
+        ]);
 
         return redirect()->route('admin.lecturers.index')
             ->with('success', 'Data dosen "' . $name . '" berhasil dihapus.');
@@ -96,14 +125,14 @@ class LecturerController extends Controller
     private function validatedFields(Request $request): array
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'nip' => ['nullable', 'string', 'max:50'],
-            'role' => ['required', 'string', 'max:255'],
-            'expertise' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'scholar_link' => ['nullable', 'url', 'max:255'],
+            'name'          => ['required', 'string', 'max:255'],
+            'nip'           => ['nullable', 'string', 'max:50'],
+            'role'          => ['required', 'string', 'max:255'],
+            'expertise'     => ['nullable', 'string', 'max:255'],
+            'email'         => ['nullable', 'email', 'max:255'],
+            'scholar_link'  => ['nullable', 'url', 'max:255'],
             'linkedin_link' => ['nullable', 'url', 'max:255'],
-            'photo' => ['nullable', 'image', 'max:5120'],
+            'photo'         => ['nullable', 'image', 'max:5120'],
         ]);
 
         unset($data['photo']);
@@ -117,9 +146,9 @@ class LecturerController extends Controller
         foreach ($request->input('educations', []) as $row) {
             if (filled($row['institution'] ?? null) || filled($row['year_range'] ?? null)) {
                 $lecturer->educations()->create([
-                    'degree' => $row['degree'] ?? 'S1',
+                    'degree'      => $row['degree'] ?? 'S1',
                     'institution' => $row['institution'] ?? '',
-                    'year_range' => $row['year_range'] ?? '',
+                    'year_range'  => $row['year_range'] ?? '',
                 ]);
             }
         }
@@ -129,7 +158,7 @@ class LecturerController extends Controller
             if (filled($row['title'] ?? null)) {
                 $lecturer->researches()->create([
                     'title' => $row['title'],
-                    'year' => $row['year'] ?? null,
+                    'year'  => $row['year'] ?? null,
                 ]);
             }
         }
@@ -139,7 +168,7 @@ class LecturerController extends Controller
             if (filled($row['title'] ?? null)) {
                 $lecturer->communityServices()->create([
                     'title' => $row['title'],
-                    'year' => $row['year'] ?? null,
+                    'year'  => $row['year'] ?? null,
                 ]);
             }
         }
