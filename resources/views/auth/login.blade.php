@@ -48,8 +48,12 @@
             <p class="mt-1 text-xs text-slate-500">Khusus untuk admin &amp; asisten laboratorium.</p>
 
             @if ($errors->any())
-                <div class="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-700">
-                    <i class="fa-solid fa-triangle-exclamation mr-1.5"></i>{{ $errors->first() }}
+                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                    <ul class="list-disc pl-5 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -63,7 +67,11 @@
                 <div>
                     <label class="mb-1.5 block text-xs font-semibold text-slate-600">Password</label>
                     <div class="relative" x-data="{ show: false }">
-                        <input :type="show ? 'text' : 'password'" name="password" required placeholder="••••••••"
+                        <input :type="show ? 'text' : 'password'"
+                            name="password"
+                            required
+                            autocomplete="current-password"
+                            placeholder="••••••••"
                             class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 pr-10 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                         <button type="button" @click="show = !show" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-maroon-500">
                             <i class="fa-regular" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>

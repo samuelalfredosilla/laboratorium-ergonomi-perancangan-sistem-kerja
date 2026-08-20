@@ -23,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'two_factor_code',
+        'two_factor_expires_at',
     ];
 
     /**
@@ -43,8 +45,29 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'     => 'datetime',
+            'password'              => 'hashed',
+            'two_factor_expires_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Cek apakah user memiliki role admin
+     */
+    public function isAdmin(): bool
+    {
+        return strtolower($this->role ?? '') === 'admin';
+    }
+
+    /**
+     * Cek apakah user memiliki salah satu dari role yang ditentukan
+     */
+    public function hasRole(array|string $roles): bool
+    {
+        if (is_string($roles)) {
+            $roles = [$roles];
+        }
+
+        return in_array(strtolower($this->role ?? ''), array_map('strtolower', $roles));
     }
 }
