@@ -126,6 +126,9 @@ class LoginController extends Controller
     /**
      * Langkah 2: Verifikasi Kode OTP & Selesaikan Login Resmi
      */
+    /**
+     * Langkah 2: Verifikasi Kode OTP & Selesaikan Login Resmi
+     */
     public function verify2Fa(Request $request)
     {
         $request->validate([
@@ -142,10 +145,25 @@ class LoginController extends Controller
             return redirect()->route('login')->withErrors(['username' => 'Sesi verifikasi telah berakhir. Silakan login kembali.']);
         }
 
+        // --- PROTEKSI TAMBAHAN: Rate Limit Percobaan OTP (Max 5x) ---
+        $otpThrottleKey = Str::transliterate('otp|' . $user->id . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($otpThrottleKey, 5)) {
+            $seconds = RateLimiter::availableIn($otpThrottleKey);
+            return back()->withErrors(['code' => "Terlalu banyak percobaan kode OTP yang salah. Tunggu {$seconds} detik."]);
+        }
+        // -----------------------------------------------------------
+
         // Cek kecocokan kode OTP dan batas waktu (5 menit)
         if ($user->two_factor_code !== $request->input('code') || now()->gt($user->two_factor_expires_at)) {
-            return back()->withErrors(['code' => 'Kode OTP salah atau telah kadaluarsa. Silakan gunakan tombol kirim ulang.']);
+            RateLimiter::hit($otpThrottleKey, 300); // Tambah hit jika kode salah (lock 5 menit)
+            $remaining = RateLimiter::remaining($otpThrottleKey, 5);
+
+            return back()->withErrors(['code' => "Kode OTP salah atau telah kadaluarsa. (Sisa percobaan: {$remaining}x)"]);
         }
+
+        // Reset hitungan limiter OTP jika berhasil
+        RateLimiter::clear($otpThrottleKey);
 
         // Reset kolom OTP setelah berhasil dipakai
         $user->update([
@@ -153,7 +171,7 @@ class LoginController extends Controller
             'two_factor_expires_at' => null,
         ]);
 
-        // Bersihkan hitungan rate limiter karena login sukses
+        // Bersihkan hitungan rate limiter login username
         $throttleKey = Str::transliterate(Str::lower($user->username) . '|' . $request->ip());
         RateLimiter::clear($throttleKey);
 
