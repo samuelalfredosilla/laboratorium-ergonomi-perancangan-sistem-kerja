@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AssistantPeriod;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Assistant;
+use App\Models\AssistantPeriod;
+use App\Models\OrganizationStructure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AboutController extends Controller
 {
@@ -22,7 +24,6 @@ class AboutController extends Controller
      */
     public function lecturers()
     {
-        // Menampilkan daftar dosen dari database
         $lecturers = DB::table('lecturers')
             ->orderBy('name', 'asc')
             ->get();
@@ -30,12 +31,14 @@ class AboutController extends Controller
         return view('about.lecturer', compact('lecturers'));
     }
 
-    // Menampilkan Detail Dosen beserta Riwayat Pendidikan, Penelitian, & Pengabdian
+    /**
+     * Menampilkan Detail Dosen beserta Riwayat Pendidikan, Penelitian, & Pengabdian
+     */
     public function lecturerDetail($id)
     {
         $lecturer = DB::table('lecturers')->where('id', $id)->first();
 
-        if (!$lecturer) {
+        if (! $lecturer) {
             abort(404);
         }
 
@@ -59,17 +62,27 @@ class AboutController extends Controller
      */
     public function epsikers()
     {
-        // Ambil periode yang diaktifkan oleh admin di panel kelola periode
         $activePeriod = AssistantPeriod::where('is_active', true)->first()
             ?? AssistantPeriod::orderBy('name', 'desc')->first();
 
         $selectedPeriod = $activePeriod ? $activePeriod->name : '2025/2026';
 
-        // Ambil asisten pada periode aktif tersebut
         $assistants = Assistant::where('period', $selectedPeriod)
             ->orderBy('sort_order', 'asc')
             ->get();
 
         return view('about.epsikers', compact('assistants', 'selectedPeriod'));
+    }
+
+    /**
+     * Menampilkan Halaman Struktur Organisasi Publik (Cached 24 Jam)
+     */
+    public function structure()
+    {
+        $structure = Cache::remember('lab_org_structure', 86400, function () {
+            return OrganizationStructure::first();
+        });
+
+        return view('about.structure', compact('structure'));
     }
 }

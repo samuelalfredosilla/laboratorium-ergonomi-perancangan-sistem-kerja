@@ -9,25 +9,40 @@ use App\Models\Lecturer;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $lecturerTotal = Lecturer::count();
-        $lecturerHeads = Lecturer::where(function ($query) {
-            $query->where('role', 'like', '%chief%')
-                ->orWhere('role', 'like', '%head%')
-                ->orWhere('role', 'like', '%kepala%');
-        })->count();
+        // 1. Agregasi Efisien & Terproteksi (Lecturers)
+        $lecturerStats = Lecturer::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN LOWER(role) LIKE '%chief%' OR LOWER(role) LIKE '%head%' OR LOWER(role) LIKE '%kepala%' THEN 1 ELSE 0 END) as heads
+        ")->first();
 
-        $newsTotal = News::count();
-        $newsPublished = News::where('is_published', true)->count();
+        $lecturerTotal = (int) ($lecturerStats->total ?? 0);
+        $lecturerHeads = (int) ($lecturerStats->heads ?? 0);
 
-        $sliderTotal = HomeSlider::count();
-        $sliderActive = HomeSlider::where('is_active', true)->count();
+        // 2. Agregasi Efisien & Terproteksi (News)
+        $newsStats = News::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN is_published = 1 THEN 1 ELSE 0 END) as published
+        ")->first();
 
-        // Ambil periode asisten terbaru yang ada di database
+        $newsTotal = (int) ($newsStats->total ?? 0);
+        $newsPublished = (int) ($newsStats->published ?? 0);
+
+        // 3. Agregasi Efisien & Terproteksi (Sliders)
+        $sliderStats = HomeSlider::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN is_active = 1 THEN 1 ELSE 0 END) as active
+        ")->first();
+
+        $sliderTotal = (int) ($sliderStats->total ?? 0);
+        $sliderActive = (int) ($sliderStats->active ?? 0);
+
+        // 4. Asisten Lab & Periode Aktif
         $latestPeriod = Assistant::max('period') ?? '2025/2026';
         $assistantTotal = Assistant::count();
         $assistantActive = Assistant::where('period', $latestPeriod)->count();
@@ -36,45 +51,53 @@ class DashboardController extends Controller
             'lecturers' => [
                 'total'   => $lecturerTotal,
                 'head'    => $lecturerHeads,
-                'members' => $lecturerTotal - $lecturerHeads,
+                'members' => max(0, $lecturerTotal - $lecturerHeads),
             ],
             'news' => [
                 'total'     => $newsTotal,
                 'published' => $newsPublished,
-                'draft'     => $newsTotal - $newsPublished,
+                'draft'     => max(0, $newsTotal - $newsPublished),
             ],
             'sliders' => [
                 'total'    => $sliderTotal,
                 'active'   => $sliderActive,
-                'inactive' => $sliderTotal - $sliderActive,
+                'inactive' => max(0, $sliderTotal - $sliderActive),
             ],
-            // Statistik Asisten yang relevan dengan tabel database
             'assistants' => [
                 'total'         => $assistantTotal,
                 'active'        => $assistantActive,
-                'latest_period' => $latestPeriod,
+                'latest_period' => e($latestPeriod),
             ],
         ];
 
-        $latestNews = News::with(['category', 'author'])
+        // 5. Berita Terbaru dengan Sanitasi Output
+        $latestNews = News::with(['category:id,name', 'author:id,name'])
+            ->select(['id', 'title', 'slug', 'image', 'category_id', 'user_id', 'is_published', 'published_at'])
             ->latest('published_at')
             ->take(4)
             ->get()
-            ->map(fn (News $news) => (object) [
-                'id'        => $news->id,
-                'title'     => $news->title,
-                'image'     => $news->image_url,
-                'category'  => $news->category->name ?? 'Umum',
-                'author'    => $news->author->name ?? 'Admin EPSK',
-                'date'      => $news->published_at?->translatedFormat('d M Y') ?? '—',
-                'published' => $news->is_published,
-            ]);
+            ->map(function (News $item) {
+                return (object) [
+                    'id'        => (int) $item->id,
+                    'title'     => e($item->title),
+                    'image'     => $item->image_url,
+                    'category'  => e($item->category->name ?? 'Umum'),
+                    'author'    => e($item->author->name ?? 'Admin EPSK'),
+                    'date'      => $item->published_at ? $item->published_at->translatedFormat('d M Y') : '—',
+                    'published' => (bool) $item->is_published,
+                ];
+            });
 
-        $settings = DB::table('settings')->pluck('value', 'key');
+        // 6. Settings Sanitization (Mencegah Stored XSS dari baris DB)
+        $settings = [];
+        if (Schema::hasTable('settings')) {
+            $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        }
+
         $contact = [
-            'address' => $settings['contact_address'] ?? '—',
-            'email'   => $settings['contact_email'] ?? '—',
-            'phone'   => $settings['contact_phone'] ?? 'Belum diatur',
+            'address' => isset($settings['contact_address']) ? strip_tags($settings['contact_address']) : '—',
+            'email'   => isset($settings['contact_email']) ? filter_var($settings['contact_email'], FILTER_SANITIZE_EMAIL) : '—',
+            'phone'   => isset($settings['contact_phone']) ? strip_tags($settings['contact_phone']) : 'Belum diatur',
         ];
 
         return view('admin.dashboard', compact('stats', 'latestNews', 'contact'));

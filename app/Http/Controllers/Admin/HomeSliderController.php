@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\HomeSlider;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class HomeSliderController extends Controller
 {
@@ -19,56 +21,131 @@ class HomeSliderController extends Controller
 
     public function store(Request $request)
     {
+        // 1. Validasi Ketat (MIME sniffing, Dimensi Pixel Flood, Ukuran)
         $validated = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'image' => ['required', 'image', 'max:4096'],
+            'title' => ['nullable', 'string', 'max:150', 'regex:/^[a-zA-Z0-9\s\-\/\(\)\.\,\&]+$/'],
+            'image' => [
+                'required',
+                'file',
+                'image',
+                'mimes:jpeg,png,jpg,webp',
+                'mimetypes:image/jpeg,image/png,image/webp',
+                'max:8192', // Maksimal 8MB
+                'dimensions:max_width=6000,max_height=6000',
+            ],
+            'is_active' => ['nullable', 'boolean'],
+        ], [
+            'title.regex'       => 'Judul mengandung karakter ilegal yang tidak diperbolehkan.',
+            'image.required'    => 'File gambar banner wajib diunggah.',
+            'image.image'       => 'File harus berupa gambar valid.',
+            'image.mimes'       => 'Format file yang diizinkan hanya JPG, PNG, dan WebP.',
+            'image.mimetypes'   => 'Tipe konten file tidak valid.',
+            'image.max'         => 'Ukuran banner maksimal 8 MB.',
+            'image.dimensions'  => 'Dimensi gambar banner terlalu besar (maksimal 6000x6000 px).',
         ]);
 
+        $file = $request->file('image');
+
+        // 2. Verifikasi Integritas File
+        if (! $file->isValid()) {
+            return back()->withErrors(['image' => 'File gambar rusak atau gagal diunggah.'])->withInput();
+        }
+
+        // 3. Penamaan File Acak Aman (Mencegah Directory Traversal & Shell Overwrite)
+        $extension = $file->getClientOriginalExtension();
+        $safeFileName = Str::random(40) . '.' . strtolower($extension);
+        $path = $file->storeAs('sliders', $safeFileName, 'public');
+
+        // 4. Sanitasi Input Title
+        $cleanTitle = isset($validated['title']) ? strip_tags(trim($validated['title'])) : null;
+
         $slider = HomeSlider::create([
-            'title' => $validated['title'] ?? null,
-            'image_path' => $request->file('image')->store('sliders', 'public'),
-            'is_active' => $request->boolean('is_active'),
+            'title'      => $cleanTitle,
+            'image_path' => $path,
+            'is_active'  => $request->boolean('is_active', true),
             'sort_order' => (int) HomeSlider::max('sort_order') + 1,
         ]);
 
-        Notification::log('Slider "' . ($slider->title ?: 'Tanpa judul') . '" ditambahkan.', 'fa-images', 'success', route('admin.sliders.index'));
+        Notification::log(
+            'Slider "' . ($slider->title ?: 'Tanpa judul') . '" ditambahkan.',
+            'fa-images',
+            'success',
+            route('admin.sliders.index')
+        );
 
-        return redirect()->route('admin.sliders.index')->with('success', 'Slider berhasil ditambahkan.');
+        return redirect()->route('admin.sliders.index')->with('success', 'Banner slider berhasil ditambahkan secara aman.');
     }
 
     public function update(Request $request, HomeSlider $slider)
     {
+        // 1. Validasi Ketat Update
         $validated = $request->validate([
-            'title' => ['nullable', 'string', 'max:255'],
-            'image' => ['nullable', 'image', 'max:4096'],
+            'title' => ['nullable', 'string', 'max:150', 'regex:/^[a-zA-Z0-9\s\-\/\(\)\.\,\&]+$/'],
+            'image' => [
+                'nullable',
+                'file',
+                'image',
+                'mimes:jpeg,png,jpg,webp',
+                'mimetypes:image/jpeg,image/png,image/webp',
+                'max:8192',
+                'dimensions:max_width=6000,max_height=6000',
+            ],
+            'is_active' => ['nullable', 'boolean'],
+        ], [
+            'title.regex'       => 'Judul mengandung karakter ilegal yang tidak diperbolehkan.',
+            'image.image'       => 'File harus berupa gambar valid.',
+            'image.mimes'       => 'Format file yang diizinkan hanya JPG, PNG, dan WebP.',
+            'image.mimetypes'   => 'Tipe konten file tidak valid.',
+            'image.max'         => 'Ukuran banner maksimal 8 MB.',
+            'image.dimensions'  => 'Dimensi gambar banner terlalu besar (maksimal 6000x6000 px).',
         ]);
 
+        $cleanTitle = isset($validated['title']) ? strip_tags(trim($validated['title'])) : null;
+
         $data = [
-            'title' => $validated['title'] ?? null,
+            'title'     => $cleanTitle,
             'is_active' => $request->boolean('is_active'),
         ];
 
+        // 2. Penanganan File Baru & Pembersihan File Lama
         if ($request->hasFile('image')) {
-            Storage::disk('public')->delete($slider->image_path);
-            $data['image_path'] = $request->file('image')->store('sliders', 'public');
+            $file = $request->file('image');
+
+            if (! $file->isValid()) {
+                return back()->withErrors(['image' => 'File gambar rusak atau gagal diunggah.'])->withInput();
+            }
+
+            // Hapus file lama secara aman
+            $this->safeDeleteFile($slider->image_path);
+
+            $extension = $file->getClientOriginalExtension();
+            $safeFileName = Str::random(40) . '.' . strtolower($extension);
+            $data['image_path'] = $file->storeAs('sliders', $safeFileName, 'public');
         }
 
         $slider->update($data);
 
-        Notification::log('Slider "' . ($slider->title ?: 'Tanpa judul') . '" diperbarui.', 'fa-images', 'maroon', route('admin.sliders.index'));
+        Notification::log(
+            'Slider "' . ($slider->title ?: 'Tanpa judul') . '" diperbarui.',
+            'fa-images',
+            'maroon',
+            route('admin.sliders.index')
+        );
 
-        return redirect()->route('admin.sliders.index')->with('success', 'Slider berhasil diperbarui.');
+        return redirect()->route('admin.sliders.index')->with('success', 'Banner slider berhasil diperbarui.');
     }
 
     public function destroy(HomeSlider $slider)
     {
-        Storage::disk('public')->delete($slider->image_path);
+        // Hapus file fisik dari storage disk
+        $this->safeDeleteFile($slider->image_path);
+
         $title = $slider->title ?: 'Tanpa judul';
         $slider->delete();
 
         Notification::log('Slider "' . $title . '" dihapus.', 'fa-trash-can', 'danger', route('admin.sliders.index'));
 
-        return redirect()->route('admin.sliders.index')->with('success', 'Slider berhasil dihapus.');
+        return redirect()->route('admin.sliders.index')->with('success', 'Banner slider berhasil dihapus.');
     }
 
     public function toggle(HomeSlider $slider)
@@ -87,17 +164,31 @@ class HomeSliderController extends Controller
 
     public function reorder(Request $request)
     {
+        // Validasi Payload Reorder (Cegah Injeksi ID non-numerik atau ID fiktif)
         $validated = $request->validate([
-            'order' => ['required', 'array'],
+            'order'   => ['required', 'array', 'max:50'],
             'order.*' => ['integer', 'exists:home_sliders,id'],
         ]);
 
-        foreach ($validated['order'] as $index => $id) {
-            HomeSlider::where('id', $id)->update(['sort_order' => $index + 1]);
-        }
+        // Eksekusi Pembaruan Posisi Secara Atomik (Database Transaction)
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['order'] as $index => $id) {
+                HomeSlider::where('id', $id)->update(['sort_order' => $index + 1]);
+            }
+        });
 
         Notification::log('Urutan slider banner diperbarui.', 'fa-arrows-up-down', 'maroon', route('admin.sliders.index'));
 
         return response()->json(['status' => 'ok']);
+    }
+
+    /**
+     * Mencegah Path Traversal & Arbitrary File Deletion
+     */
+    private function safeDeleteFile(?string $path): void
+    {
+        if ($path && str_starts_with($path, 'sliders/') && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

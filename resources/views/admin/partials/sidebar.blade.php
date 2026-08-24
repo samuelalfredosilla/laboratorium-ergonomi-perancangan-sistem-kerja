@@ -14,6 +14,7 @@
                 ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => 'admin.news.index', 'active' => 'admin.news.*'],
                 ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => 'admin.categories.index'],
                 ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => 'admin.sliders.index'],
+                ['label' => 'Organization Structure', 'icon' => 'fa-sitemap', 'route' => 'admin.organization-structure.index', 'active' => 'admin.organization-structure.*'],
             ],
         ],
         [

@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController as PublicNewsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\OrganizationStructureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,7 @@ Route::prefix('about')->name('about.')->group(function () {
     Route::get('/lecturer', [AboutController::class, 'lecturers'])->name('lecturer');
     Route::get('/lecturer/{id}', [AboutController::class, 'lecturerDetail'])->name('lecturer-detail');
     Route::get('/epsikers', [AboutController::class, 'epsikers'])->name('epsikers');
+    Route::get('/structure', [AboutController::class, 'structure'])->name('structure');
 });
 
 // Public News & Articles
@@ -114,5 +116,12 @@ Route::prefix('admin')
             Route::put('/{slider}', [HomeSliderController::class, 'update'])->name('update');
             Route::delete('/{slider}', [HomeSliderController::class, 'destroy'])->name('destroy');
             Route::patch('/{slider}/toggle', [HomeSliderController::class, 'toggle'])->name('toggle');
+        });
+
+        // 6. Organization Structure Management
+        Route::prefix('organization-structure')->name('organization-structure.')->group(function () {
+            Route::get('/', [OrganizationStructureController::class, 'index'])->name('index');
+            Route::put('/update', [OrganizationStructureController::class, 'update'])->name('update');
+            Route::delete('/destroy', [OrganizationStructureController::class, 'destroy'])->name('destroy');
         });
     });
