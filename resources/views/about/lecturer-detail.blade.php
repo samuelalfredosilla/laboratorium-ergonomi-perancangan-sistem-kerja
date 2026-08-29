@@ -2,11 +2,12 @@
 
 @section('content')
 <style>
-    /* Styling Khusus Detail Profil Dosen */
     .lecturer-detail-wrapper {
         max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1.25rem 4rem 1.25rem;
+        margin: 2rem auto 0 auto; 
+        padding: 0 1.25rem 2.5rem 1.25rem;
+        position: relative;
+        z-index: 10;
     }
     .lecturer-grid {
         display: grid;
@@ -23,35 +24,68 @@
         background: #ffffff;
         border-radius: 1.25rem;
         border: 1px solid #e2e8f0;
-        overflow: hidden;
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
         position: sticky;
         top: 90px;
+        overflow: visible; /* Mencegah foto terpotong */
     }
     .profile-card-top-bg {
-        height: 100px;
+        height: 90px;
         background: linear-gradient(135deg, #6b1c1c 0%, #3d0c0c 100%);
+        border-top-left-radius: 1.25rem;
+        border-top-right-radius: 1.25rem;
+        position: relative;
     }
+
+    /* Tombol Kembali Panah */
+    .btn-back-circle {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        color: #881337;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+    }
+    .btn-back-circle:hover {
+        background: #881337;
+        color: #ffffff;
+        transform: translateX(-3px);
+    }
+
+    /* Avatar Box - Disesuaikan agar wajah tampil penuh */
     .profile-avatar-box {
-        margin-top: -65px;
+        margin-top: -55px;
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%;
+        position: relative;
+        z-index: 5;
     }
     .profile-avatar-box img {
-        width: 130px;
-        height: 130px;
+        width: 125px;
+        height: 125px;
         border-radius: 50%;
         object-fit: cover;
+        object-position: center 15%; /* Fokus ke area wajah */
         border: 4px solid #ffffff;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-        background: #f8fafc;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        background: #ffffff;
         display: block;
-        margin: 0 auto;
     }
     .profile-body {
-        padding: 1.25rem 1.5rem 1.75rem 1.5rem;
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
         text-align: center;
     }
     .badge-role {
@@ -62,72 +96,72 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        padding: 0.35rem 0.85rem;
+        padding: 0.3rem 0.85rem;
         border-radius: 50px;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.65rem;
     }
     .profile-name-text {
-        font-size: 1.25rem;
+        font-size: 1.18rem;
         font-weight: 800;
         color: #1e293b;
         line-height: 1.35;
-        margin-bottom: 0.35rem;
+        margin-bottom: 0.25rem;
     }
     .profile-nip-text {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
         color: #64748b;
         font-family: monospace;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1.15rem;
     }
     .info-list-box {
         text-align: left;
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
-        margin-bottom: 1.25rem;
+        gap: 0.65rem;
+        margin-bottom: 1.15rem;
     }
     .info-box-item {
         background: #f8fafc;
         border: 1px solid #edf2f7;
         border-radius: 0.75rem;
-        padding: 0.85rem 1rem;
+        padding: 0.75rem 0.9rem;
         display: flex;
-        gap: 0.85rem;
+        gap: 0.75rem;
         align-items: flex-start;
     }
     .info-box-item i {
         color: #881337;
-        font-size: 1rem;
+        font-size: 0.95rem;
         margin-top: 0.2rem;
         flex-shrink: 0;
     }
     .info-box-label {
-        font-size: 0.68rem;
+        font-size: 0.66rem;
         font-weight: 700;
         color: #94a3b8;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
     .info-box-val {
-        font-size: 0.88rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: #1e293b;
-        margin-top: 0.15rem;
+        margin-top: 0.1rem;
         word-break: break-word;
     }
     .social-btn-group {
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.45rem;
     }
     .social-link-btn {
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
-        padding: 0.65rem 1rem;
+        padding: 0.55rem 1rem;
         border-radius: 50px;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
@@ -136,7 +170,6 @@
     }
     .social-link-btn:hover {
         background: #f1f5f9;
-        border-color: #94a3b8;
         color: #0f172a;
     }
     .social-link-btn.linkedin {
@@ -144,48 +177,47 @@
         color: #ffffff;
         border-color: #0077b5;
     }
-    .social-link-btn.linkedin:hover {
-        background: #005f93;
-        border-color: #005f93;
-    }
 
-    /* Bagian Konten Kanan */
+    /* Konten Kanan */
     .content-card-box {
         background: #ffffff;
         border-radius: 1.25rem;
         border: 1px solid #e2e8f0;
-        padding: 1.75rem;
+        padding: 1.5rem 1.75rem;
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+    .content-card-box:last-child {
+        margin-bottom: 0;
     }
     .content-header {
         display: flex;
         align-items: center;
         gap: 0.85rem;
-        padding-bottom: 1rem;
+        padding-bottom: 0.85rem;
         border-bottom: 1px solid #f1f5f9;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
     }
     .content-header-icon {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 0.75rem;
         background: #fee2e2;
         color: #881337;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         flex-shrink: 0;
     }
     .content-header-title h3 {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 800;
         color: #1e293b;
         margin: 0;
     }
     .content-header-title p {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         color: #64748b;
         margin: 0;
     }
@@ -199,7 +231,7 @@
     }
     .edu-item {
         position: relative;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
     }
     .edu-item:last-child {
         margin-bottom: 0;
@@ -215,7 +247,7 @@
         top: 3px;
     }
     .edu-degree {
-        font-size: 0.98rem;
+        font-size: 0.95rem;
         font-weight: 700;
         color: #1e293b;
         display: flex;
@@ -228,84 +260,61 @@
         background: #f1f5f9;
         color: #475569;
         border: 1px solid #e2e8f0;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-family: monospace;
-        padding: 0.2rem 0.6rem;
+        padding: 0.15rem 0.55rem;
         border-radius: 50px;
     }
     .edu-institution {
-        font-size: 0.86rem;
+        font-size: 0.84rem;
         color: #64748b;
-        margin-top: 0.25rem;
+        margin-top: 0.2rem;
     }
 
-    /* List Karya Riset / Pengabdian */
+    /* List Row */
     .item-card-row {
         background: #f8fafc;
         border: 1px solid #f1f5f9;
-        border-radius: 0.85rem;
-        padding: 1rem 1.15rem;
+        border-radius: 0.75rem;
+        padding: 0.85rem 1rem;
         display: flex;
-        gap: 1rem;
+        gap: 0.85rem;
         align-items: flex-start;
-        margin-bottom: 0.85rem;
+        margin-bottom: 0.75rem;
     }
     .item-card-row:last-child {
         margin-bottom: 0;
     }
     .item-number {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 50%;
         color: #881337;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 800;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
     .item-title {
-        font-size: 0.9rem;
+        font-size: 0.88rem;
         color: #1e293b;
         font-weight: 600;
-        line-height: 1.45;
-        margin-bottom: 0.35rem;
+        line-height: 1.4;
+        margin-bottom: 0.25rem;
     }
     .item-year-badge {
         display: inline-block;
         background: #e2e8f0;
         color: #334155;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         font-family: monospace;
         font-weight: 600;
-        padding: 0.15rem 0.55rem;
+        padding: 0.1rem 0.5rem;
         border-radius: 50px;
-    }
-
-    .btn-back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1.15rem;
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 50px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #475569;
-        text-decoration: none;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        margin-bottom: 1.5rem;
-        transition: all 0.2s;
-    }
-    .btn-back-link:hover {
-        background: #f8fafc;
-        color: #881337;
-        border-color: #cbd5e1;
     }
 </style>
 
@@ -320,19 +329,18 @@
     </div>
 
     <!-- Main Container -->
-    <div class="lecturer-detail-wrapper" style="margin-top: 2rem;">
-
-        <!-- Tombol Kembali -->
-        <a href="{{ route('about.lecturer') }}" class="btn-back-link">
-            <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Dosen
-        </a>
+    <div class="lecturer-detail-wrapper">
 
         <!-- 2 Kolom Grid Profil -->
         <div class="lecturer-grid">
 
             <!-- Sidebar Informasi Dosen (Kiri) -->
             <div class="profile-card-sticky">
-                <div class="profile-card-top-bg"></div>
+                <div class="profile-card-top-bg">
+                    <a href="{{ route('about.lecturer') }}" class="btn-back-circle" title="Kembali ke Daftar Dosen">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                </div>
 
                 <div class="profile-avatar-box">
                     <img src="{{ Str::startsWith($lecturer->photo, 'http') ? $lecturer->photo : ($lecturer->photo ? asset('storage/' . $lecturer->photo) : asset('images/default-avatar.png')) }}"

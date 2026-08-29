@@ -10,7 +10,8 @@
         [
             'label' => 'Management',
             'items' => [
-                ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => 'admin.lecturers.index'],
+                ['label' => 'Practicum Activities', 'icon' => 'fa-clipboard-list', 'route' => 'admin.practicum.index', 'active' => 'admin.practicum.*'],
+                ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => 'admin.lecturers.index', 'active' => 'admin.lecturers.*'],
                 ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => 'admin.news.index', 'active' => 'admin.news.*'],
                 ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => 'admin.categories.index'],
                 ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => 'admin.sliders.index'],
@@ -22,7 +23,7 @@
             'items' => [
                 ['label' => 'EPSIKERS / Assistants', 'icon' => 'fa-user-check', 'route' => 'admin.assistants.index', 'active' => 'admin.assistants.*'],
                 ['label' => 'Facilities & Tools', 'icon' => 'fa-boxes-stacked', 'route' => null],
-                ['label' => 'Lab Requests / Services', 'icon' => 'fa-clipboard-list', 'route' => null],
+                ['label' => 'Lab Requests / Services', 'icon' => 'fa-clipboard-question', 'route' => null],
             ],
         ],
         [

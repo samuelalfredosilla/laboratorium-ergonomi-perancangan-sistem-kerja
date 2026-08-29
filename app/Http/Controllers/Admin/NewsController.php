@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\News;
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -23,7 +24,6 @@ class NewsController extends Controller
 
     public function index(Request $request)
     {
-        // Sanitasi query pencarian dari wildcard injection
         $search = $request->input('search');
         if ($search) {
             $search = addcslashes(strip_tags(trim($search)), '%_');
@@ -68,17 +68,19 @@ class NewsController extends Controller
             $data['image'] = $file->storeAs('news', $safeFileName, 'public');
         }
 
-        $news = News::create($data);
+        $news = DB::transaction(function () use ($data) {
+            return News::create($data);
+        });
 
         Notification::log(
             'Berita baru "' . $news->title . '" ditambahkan.',
             'fa-newspaper',
             'success',
-            route('admin.news.index')
+            route('admin.news.show', $news)
         );
 
         ActivityLog::record($news, 'created', 'Menambahkan berita baru: ' . $news->title, [
-            'attributes' => $news->toArray(),
+            'attributes' => $news->only(['title', 'category_id', 'published_at', 'is_published']),
         ]);
 
         return redirect()->route('admin.news.index')->with('success', 'Berita "' . $news->title . '" berhasil disimpan secara aman.');
@@ -86,36 +88,82 @@ class NewsController extends Controller
 
     public function update(Request $request, News $news)
     {
-        $data = $this->validatedFields($request);
+        $data = $this->validatedFields($request, $news);
+
+        // 1. Ambil snapshot data lama
+        $news->loadMissing('category');
+        $oldCategoryName = $news->category?->name ?? '—';
+        $oldDate = $news->published_at ? \Carbon\Carbon::parse($news->published_at)->format('Y-m-d') : 'Draft';
+        $oldStatus = $news->is_published ? 'Published' : 'Draft';
+        $oldContentText = trim(preg_replace('/\s+/', ' ', strip_tags($news->content)));
+
+        $oldValues = [
+            'Judul Berita'      => $news->title,
+            'Kategori'          => $oldCategoryName,
+            'Tanggal Publikasi' => $oldDate,
+            'Status Publikasi'  => $oldStatus,
+            'Gambar Banner'     => $news->image ? 'Ada Banner' : 'Tanpa Banner',
+            'Isi Konten'        => Str::limit($oldContentText, 70),
+        ];
 
         if ($data['title'] !== $news->title) {
             $data['slug'] = $this->uniqueSlug($data['title'], $news->id);
         }
 
+        $imageChanged = false;
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             if (! $file->isValid()) {
                 return back()->withErrors(['image' => 'File gambar tidak valid atau rusak.'])->withInput();
             }
 
-            // Hapus file lama secara aman
             $this->safeDeleteFile($news->image);
 
             $extension = $file->getClientOriginalExtension();
             $safeFileName = Str::random(40) . '.' . strtolower($extension);
             $data['image'] = $file->storeAs('news', $safeFileName, 'public');
+            $imageChanged = true;
         }
 
-        $oldValues = $news->getOriginal();
-        $news->update($data);
-        $changes = $news->getChanges();
-        $oldChanges = array_intersect_key($oldValues, $changes);
+        // 2. Eksekusi update
+        DB::transaction(function () use ($news, $data) {
+            $news->update($data);
+        });
 
+        // 3. Ambil snapshot data baru
+        $news->load('category');
+        $newCategoryName = $news->category?->name ?? '—';
+        $newDate = $news->published_at ? \Carbon\Carbon::parse($news->published_at)->format('Y-m-d') : 'Draft';
+        $newStatus = $news->is_published ? 'Published' : 'Draft';
+        $newContentText = trim(preg_replace('/\s+/', ' ', strip_tags($news->content)));
+
+        $newValues = [
+            'Judul Berita'      => $news->title,
+            'Kategori'          => $newCategoryName,
+            'Tanggal Publikasi' => $newDate,
+            'Status Publikasi'  => $newStatus,
+            'Gambar Banner'     => $imageChanged ? 'Banner Diperbarui' : ($news->image ? 'Ada Banner' : 'Tanpa Banner'),
+            'Isi Konten'        => Str::limit($newContentText, 70),
+        ];
+
+        // 4. Bandingkan semua field yang berubah
+        $changes = [];
+        $oldChanges = [];
+
+        foreach ($newValues as $key => $newVal) {
+            $oldVal = $oldValues[$key] ?? null;
+            if ((string)$oldVal !== (string)$newVal) {
+                $changes[$key] = $newVal;
+                $oldChanges[$key] = $oldVal;
+            }
+        }
+
+        // 5. Catat ke notifikasi lonceng navbar & database activity logs
         Notification::log(
             'Berita "' . $news->title . '" diperbarui.',
             'fa-newspaper',
             'maroon',
-            route('admin.news.index')
+            route('admin.news.show', $news)
         );
 
         if (! empty($changes)) {
@@ -133,10 +181,11 @@ class NewsController extends Controller
         $title = $news->title;
         $backupData = $news->toArray();
 
-        // Hapus banner lama secara aman
         $this->safeDeleteFile($news->image);
 
-        $news->delete();
+        DB::transaction(function () use ($news) {
+            $news->delete();
+        });
 
         Notification::log('Berita "' . $title . '" dihapus.', 'fa-trash-can', 'danger', route('admin.news.index'));
 
@@ -149,7 +198,9 @@ class NewsController extends Controller
 
     public function toggle(News $news)
     {
+        $oldStatus = $news->is_published ? 'Published' : 'Draft';
         $news->update(['is_published' => ! $news->is_published]);
+        $newStatus = $news->is_published ? 'Published' : 'Draft';
 
         $statusText = $news->is_published ? 'dipublikasikan.' : 'dijadikan draft.';
 
@@ -157,11 +208,12 @@ class NewsController extends Controller
             'Berita "' . $news->title . '" ' . $statusText,
             $news->is_published ? 'fa-eye' : 'fa-eye-slash',
             $news->is_published ? 'success' : 'warning',
-            route('admin.news.index')
+            route('admin.news.show', $news)
         );
 
         ActivityLog::record($news, 'updated', 'Mengubah status publikasi berita: ' . $news->title, [
-            'status' => $news->is_published ? 'published' : 'draft',
+            'old' => ['Status Publikasi' => $oldStatus],
+            'new' => ['Status Publikasi' => $newStatus],
         ]);
 
         return back()->with('success', $news->is_published ? 'Berita dipublikasikan.' : 'Berita disimpan sebagai draft.');
@@ -172,7 +224,7 @@ class NewsController extends Controller
         $data = $request->validate([
             'title'        => ['required', 'string', 'max:200'],
             'category_id'  => ['required', 'integer', 'exists:categories,id'],
-            'content'      => ['required', 'string', 'max:65000'],
+            'content'      => ['required', 'string'],
             'image'        => [
                 'nullable',
                 'file',
@@ -211,7 +263,6 @@ class NewsController extends Controller
      */
     private function cleanHtmlContent(string $html): string
     {
-        // Daftar tag yang diizinkan untuk formatting artikel
         $allowedTags = '<p><br><b><strong><i><em><u><strike><s><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><a><img><table><thead><tbody><tr><th><td><hr><code><pre>';
         
         $cleaned = strip_tags($html, $allowedTags);

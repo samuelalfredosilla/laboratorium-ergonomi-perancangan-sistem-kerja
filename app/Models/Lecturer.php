@@ -2,19 +2,27 @@
 
 namespace App\Models;
 
+use App\Models\ActivityLog;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use App\Models\ActivityLog;
 
 class Lecturer extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name', 'nip', 'role', 'photo', 'expertise', 'email',
-        'scholar_link', 'linkedin_link', 'sort_order',
+        'name',
+        'nip',
+        'role',
+        'photo',
+        'expertise',
+        'email',
+        'scholar_link',
+        'linkedin_link',
+        'sort_order',
     ];
 
     protected $appends = ['photo_url'];
@@ -48,5 +56,15 @@ class Lecturer extends Model
         return $this->hasMany(ActivityLog::class, 'subject_id')
             ->where('subject_type', self::class)
             ->latest();
+    }
+
+    /**
+     * Default pengurutan otomatis di seluruh aplikasi
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope('ordered', function (Builder $builder) {
+            $builder->orderBy('sort_order', 'asc')->orderBy('id', 'asc');
+        });
     }
 }

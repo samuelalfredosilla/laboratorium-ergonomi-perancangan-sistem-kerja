@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Category;
+use App\Models\News;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -53,17 +55,23 @@ class CategoryController extends Controller
 
         $slug = $this->uniqueSlug($validated['name']);
 
-        $category = Category::create([
-            'name' => $validated['name'],
-            'slug' => $slug,
-        ]);
+        $category = DB::transaction(function () use ($validated, $slug) {
+            return Category::create([
+                'name' => $validated['name'],
+                'slug' => $slug,
+            ]);
+        });
 
         Notification::log(
-            'Kategori "' . $category->name . '" ditambahkan.',
+            'Kategori baru "' . $category->name . '" ditambahkan.',
             'fa-tags',
             'success',
             route('admin.categories.index')
         );
+
+        ActivityLog::record($category, 'created', 'Menambahkan kategori baru: ' . $category->name, [
+            'attributes' => $category->toArray(),
+        ]);
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori "' . $category->name . '" berhasil ditambahkan.');
@@ -93,14 +101,17 @@ class CategoryController extends Controller
             'name.unique'   => 'Kategori dengan nama tersebut sudah digunakan.',
         ]);
 
+        $oldName = $category->name;
         $newSlug = $validated['name'] === $category->name
             ? $category->slug
             : $this->uniqueSlug($validated['name'], $category->id);
 
-        $category->update([
-            'name' => $validated['name'],
-            'slug' => $newSlug,
-        ]);
+        DB::transaction(function () use ($category, $validated, $newSlug) {
+            $category->update([
+                'name' => $validated['name'],
+                'slug' => $newSlug,
+            ]);
+        });
 
         Notification::log(
             'Kategori "' . $category->name . '" diperbarui.',
@@ -109,6 +120,13 @@ class CategoryController extends Controller
             route('admin.categories.index')
         );
 
+        if ($oldName !== $category->name) {
+            ActivityLog::record($category, 'updated', 'Memperbarui nama kategori: ' . $oldName . ' -> ' . $category->name, [
+                'old' => ['Nama Kategori' => $oldName],
+                'new' => ['Nama Kategori' => $category->name],
+            ]);
+        }
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'Kategori "' . $category->name . '" berhasil diperbarui.');
     }
@@ -116,18 +134,24 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $name = $category->name;
-        $newsCount = $category->news()->count();
+        $backupData = $category->toArray();
+        $newsCount = News::where('category_id', $category->id)->count();
 
-        // 3. Penghapusan Atomik Aman Melalui DB Transaction
+        // 3. Penghapusan Atomik: Ubah berita terkait jadi NULL (None), lalu hapus kategori
         DB::transaction(function () use ($category) {
+            News::where('category_id', $category->id)->update(['category_id' => null]);
             $category->delete();
         });
 
         $message = $newsCount > 0
-            ? "Kategori \"{$name}\" beserta {$newsCount} berita di dalamnya berhasil dihapus."
+            ? "Kategori \"{$name}\" berhasil dihapus. {$newsCount} berita terkait dialihkan ke Tanpa Kategori (None)."
             : "Kategori \"{$name}\" berhasil dihapus.";
 
         Notification::log($message, 'fa-trash-can', 'danger', route('admin.categories.index'));
+
+        ActivityLog::record($category, 'deleted', 'Menghapus kategori: ' . $name, [
+            'attributes' => $backupData,
+        ]);
 
         return redirect()->route('admin.categories.index')->with('success', $message);
     }

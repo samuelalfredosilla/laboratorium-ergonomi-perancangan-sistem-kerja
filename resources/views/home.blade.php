@@ -20,7 +20,7 @@
         <div class="hero-container">
             <!-- Subtitle Badge -->
             <span class="hero-badge">
-                INDUSTRIAL ENGINEERING - UNIVERSITAS TRUNOJOYO MADURA
+                INDUSTRIAL ENGINEERING - UNIVERSITAS TRUNODJOYO MADURA
             </span>
 
             <!-- Main Title -->

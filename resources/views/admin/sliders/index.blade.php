@@ -32,6 +32,9 @@
             this.imageRequired = false;
             this.modalOpen = true;
         },
+        closeModal() {
+            this.modalOpen = false;
+        },
         confirmDelete(slider) {
             this.deleteTarget = slider;
             this.deleteModalOpen = true;
@@ -49,12 +52,13 @@
     }"
     class="space-y-6"
 >
+    <!-- Header -->
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-xl font-bold text-slate-800 sm:text-2xl">Home Sliders</h1>
             <p class="mt-1 text-sm text-slate-500">Kelola banner slider di halaman utama. Seret kartu untuk mengubah urutan tampil.</p>
         </div>
-        <button @click="openCreate()" class="inline-flex items-center justify-center gap-2 rounded-lg bg-maroon-600 px-4 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-maroon-700">
+        <button type="button" @click="openCreate()" class="inline-flex items-center justify-center gap-2 rounded-lg bg-maroon-600 px-4 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-maroon-700 transition-colors cursor-pointer">
             <i class="fa-solid fa-plus text-xs"></i> Tambah Slider
         </button>
     </div>
@@ -72,18 +76,18 @@
             </span>
             <p class="text-sm font-semibold text-slate-600">Belum ada slider</p>
             <p class="max-w-xs text-xs text-slate-400">Tambahkan banner untuk ditampilkan di halaman utama situs.</p>
-            <button @click="openCreate()" class="mt-2 inline-flex items-center gap-2 rounded-lg bg-maroon-600 px-4 py-2 text-xs font-semibold text-white hover:bg-maroon-700">
+            <button type="button" @click="openCreate()" class="mt-2 inline-flex items-center gap-2 rounded-lg bg-maroon-600 px-4 py-2 text-xs font-semibold text-white hover:bg-maroon-700">
                 <i class="fa-solid fa-plus text-[10px]"></i> Tambah Slider Pertama
             </button>
         </div>
     @else
         <div id="sliderGrid" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($sliders as $slider)
-            <div class="slider-card group relative cursor-grab overflow-hidden rounded-xl border border-slate-200 bg-white shadow-soft active:cursor-grabbing" draggable="true" data-id="{{ $slider->id }}">
+            <div class="slider-card group relative cursor-grab overflow-hidden rounded-xl border border-slate-200 bg-white shadow-soft active:cursor-grabbing transition-shadow hover:shadow-md" data-id="{{ $slider->id }}">
                 <div class="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-md bg-slate-900/50 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
                     <i class="fa-solid fa-grip-vertical text-xs"></i>
                 </div>
-                <span class="absolute right-2 top-2 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $slider->is_active ? 'bg-emerald-500 text-white' : 'bg-slate-500 text-white' }}">
+                <span class="absolute right-2 top-2 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold {{ $slider->is_active ? 'bg-emerald-500 text-white shadow-xs' : 'bg-slate-500 text-white' }}">
                     {{ $slider->is_active ? 'Aktif' : 'Nonaktif' }}
                 </span>
                 <div class="aspect-video w-full overflow-hidden bg-slate-100">
@@ -95,15 +99,15 @@
                         <p class="text-[11px] text-slate-400">Urutan #{{ $slider->sort_order }}</p>
                     </div>
                     <div class="flex shrink-0 items-center gap-1">
-                        <button @click="openEdit({{ Illuminate\Support\Js::from([
+                        <button type="button" @click="openEdit({{ Illuminate\Support\Js::from([
                             'id' => $slider->id,
                             'title' => $slider->title,
                             'is_active' => $slider->is_active,
                             'image_url' => \Illuminate\Support\Str::startsWith($slider->image_path, 'http') ? $slider->image_path : asset('storage/' . $slider->image_path),
-                        ]) }})" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-maroon-50 hover:text-maroon-600">
+                        ]) }})" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-maroon-50 hover:text-maroon-600 transition-colors">
                             <i class="fa-regular fa-pen-to-square text-sm"></i>
                         </button>
-                        <button @click="confirmDelete({{ Illuminate\Support\Js::from(['id' => $slider->id, 'title' => $slider->title ?: 'Slider ini']) }})" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600">
+                        <button type="button" @click="confirmDelete({{ Illuminate\Support\Js::from(['id' => $slider->id, 'title' => $slider->title ?: 'Slider ini']) }})" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors">
                             <i class="fa-regular fa-trash-can text-sm"></i>
                         </button>
                         <form id="delete-form-{{ $slider->id }}" method="POST" action="{{ route('admin.sliders.destroy', $slider) }}" class="hidden">
@@ -117,129 +121,207 @@
         </div>
     @endif
 
-    {{-- ============================= CREATE / EDIT MODAL ============================= --}}
-    <div x-cloak x-show="modalOpen" x-transition.opacity class="fixed inset-0 z-40 flex items-center justify-center p-4" @keydown.escape.window="modalOpen = false">
-        <div class="absolute inset-0 bg-slate-900/50" @click="modalOpen = false"></div>
-        <div x-show="modalOpen" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-            class="relative w-full max-w-md rounded-xl bg-white shadow-2xl">
-            <form method="POST" :action="mode === 'create' ? '{{ route('admin.sliders.store') }}' : '{{ url('admin/sliders') }}/' + editId" enctype="multipart/form-data">
-                @csrf
-                <input type="hidden" name="_method" :value="mode === 'edit' ? 'PUT' : 'POST'">
+    {{-- ============================= CREATE / EDIT MODAL (FULL SCREEN) ============================= --}}
+    <div 
+        x-cloak 
+        x-show="modalOpen" 
+        class="fixed inset-0 overflow-y-auto"
+        style="z-index: 9999;"
+        @keydown.escape.window="closeModal()"
+    >
+        <!-- Backdrop Overlay Full Viewport -->
+        <div 
+            x-show="modalOpen"
+            x-transition:enter="transition-opacity ease-linear duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-linear duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" 
+            @click="closeModal()"
+        ></div>
 
-                <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h2 class="text-base font-bold text-slate-800" x-text="mode === 'create' ? 'Tambah Slider' : 'Edit Slider'"></h2>
-                    <button type="button" @click="modalOpen = false" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
+        <!-- Modal Box Wrapper di Titik Tengah Layar Penuh -->
+        <div class="fixed inset-0 z-10 flex min-h-full items-center justify-center p-4">
+            <div 
+                x-show="modalOpen" 
+                x-transition:enter="transition ease-out duration-200" 
+                x-transition:enter-start="opacity-0 scale-95" 
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-slate-100"
+            >
+                <form method="POST" :action="mode === 'create' ? '{{ route('admin.sliders.store') }}' : '{{ url('admin/sliders') }}/' + editId" enctype="multipart/form-data">
+                    @csrf
+                    <template x-if="mode === 'edit'">
+                        <input type="hidden" name="_method" value="PUT">
+                    </template>
 
-                <div class="space-y-4 px-5 py-5">
-                    <div>
-                        <label class="mb-1.5 block text-xs font-semibold text-slate-600">Gambar Banner (rasio 16:9)</label>
-                        <label class="flex aspect-video cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border-2 border-dashed border-slate-300 text-center text-xs text-slate-400 hover:border-maroon-300 hover:bg-maroon-50 hover:text-maroon-500">
-                            <template x-if="imagePreview">
-                                <img :src="imagePreview" class="h-full w-full object-cover">
-                            </template>
-                            <template x-if="!imagePreview">
-                                <div class="flex flex-col items-center gap-1.5 p-4">
-                                    <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
-                                    <span>Klik atau seret gambar ke sini (JPG/PNG)</span>
-                                </div>
-                            </template>
-                            <input type="file" name="image" accept="image/*" class="hidden" @change="previewImage($event)" :required="imageRequired">
-                        </label>
+                    <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-white">
+                        <h2 class="text-base font-bold text-slate-800" x-text="mode === 'create' ? 'Tambah Slider Baru' : 'Edit Slider'"></h2>
+                        <button type="button" @click="closeModal()" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
-                    <div>
-                        <label class="mb-1.5 block text-xs font-semibold text-slate-600">Judul (opsional)</label>
-                        <input type="text" name="title" x-model="titleValue" placeholder="Contoh: Kegiatan Laboratorium 2026"
-                            class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
-                    </div>
-                    <div class="flex items-center justify-between rounded-lg border border-slate-100 px-3.5 py-3">
+
+                    <div class="space-y-4 px-6 py-5 max-h-[75vh] overflow-y-auto">
                         <div>
-                            <p class="text-sm font-semibold text-slate-700">Status</p>
-                            <p class="text-xs text-slate-400">Tampilkan di halaman utama</p>
+                            <label class="mb-1.5 block text-xs font-semibold text-slate-600">Gambar Banner (rasio 16:9) *</label>
+                            <label class="flex aspect-video cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed border-slate-300 text-center text-xs text-slate-400 hover:border-maroon-300 hover:bg-maroon-50 hover:text-maroon-500 transition-colors">
+                                <template x-if="imagePreview">
+                                    <img :src="imagePreview" class="h-full w-full object-cover">
+                                </template>
+                                <template x-if="!imagePreview">
+                                    <div class="flex flex-col items-center gap-1.5 p-4">
+                                        <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                                        <span class="font-medium">Klik atau seret gambar banner (JPG/PNG, Maks 5MB)</span>
+                                    </div>
+                                </template>
+                                <input type="file" name="image" accept="image/*" class="hidden" @change="previewImage($event)" :required="imageRequired">
+                            </label>
+                            <p x-show="imagePreview" class="mt-1 text-[11px] text-center text-maroon-600 font-semibold">Klik banner di atas untuk mengganti gambar</p>
                         </div>
-                        <label class="relative inline-flex cursor-pointer items-center">
-                            <input type="checkbox" name="is_active" value="1" x-model="activeValue" class="peer sr-only">
-                            <div class="h-5 w-9 rounded-full bg-slate-300 transition-colors peer-checked:bg-emerald-500"></div>
-                            <div class="absolute left-1 top-1 h-3.5 w-3.5 rounded-full bg-white transition-transform peer-checked:translate-x-4"></div>
-                        </label>
-                    </div>
-                </div>
 
-                <div class="flex items-center justify-end gap-3 border-t border-slate-100 px-5 py-4">
-                    <button type="button" @click="modalOpen = false" class="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Batal</button>
-                    <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-maroon-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-maroon-700">
-                        <i class="fa-solid fa-floppy-disk text-xs"></i> Simpan
-                    </button>
-                </div>
-            </form>
+                        <div>
+                            <label class="mb-1.5 block text-xs font-semibold text-slate-600">Judul Banner (opsional)</label>
+                            <input type="text" name="title" x-model="titleValue" placeholder="Contoh: Kegiatan Laboratorium 2026"
+                                class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                        </div>
+
+                        <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+                            <div>
+                                <p class="text-xs font-semibold text-slate-700">Status Banner</p>
+                                <p class="text-[11px] text-slate-400">Tampilkan slider ini di landing page utama.</p>
+                            </div>
+                            <label class="relative inline-flex cursor-pointer items-center">
+                                <input type="checkbox" name="is_active" value="1" x-model="activeValue" class="peer sr-only">
+                                <div class="h-5 w-9 rounded-full bg-slate-300 transition-colors peer-checked:bg-emerald-500"></div>
+                                <div class="absolute left-1 top-1 h-3.5 w-3.5 rounded-full bg-white transition-transform peer-checked:translate-x-4"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-3 border-t border-slate-100 px-6 py-4 bg-white">
+                        <button type="button" @click="closeModal()" class="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer">Batal</button>
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-maroon-600 px-5 py-2.5 text-xs font-semibold text-white shadow-soft hover:bg-maroon-700 transition-colors cursor-pointer">
+                            <i class="fa-solid fa-floppy-disk text-xs"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    {{-- ============================= DELETE CONFIRM MODAL ============================= --}}
-    <div x-cloak x-show="deleteModalOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="deleteModalOpen = false">
-        <div class="absolute inset-0 bg-slate-900/50" @click="deleteModalOpen = false"></div>
-        <div x-show="deleteModalOpen" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-            class="relative w-full max-w-sm rounded-xl bg-white p-6 text-center shadow-2xl">
-            <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
-                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-            </span>
-            <h3 class="mt-4 text-base font-bold text-slate-800">Hapus Slider?</h3>
-            <p class="mt-1.5 text-sm text-slate-500">
-                Anda yakin ingin menghapus <span class="font-semibold text-slate-700" x-text="deleteTarget?.title"></span>? Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <div class="mt-6 flex gap-3">
-                <button @click="deleteModalOpen = false" class="flex-1 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Batal</button>
-                <button @click="submitDelete()" class="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700">Ya, Hapus</button>
+    {{-- ============================= DELETE CONFIRMATION MODAL (FULL SCREEN) ============================= --}}
+    <div 
+        x-cloak 
+        x-show="deleteModalOpen" 
+        class="fixed inset-0 overflow-y-auto"
+        style="z-index: 9999;"
+        @keydown.escape.window="deleteModalOpen = false"
+    >
+        <!-- Backdrop Overlay Full Viewport -->
+        <div 
+            x-show="deleteModalOpen"
+            x-transition:enter="transition-opacity ease-linear duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-linear duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" 
+            @click="deleteModalOpen = false"
+        ></div>
+
+        <!-- Modal Box Wrapper di Titik Tengah Layar Penuh -->
+        <div class="fixed inset-0 z-10 flex min-h-full items-center justify-center p-4">
+            <div 
+                x-show="deleteModalOpen" 
+                x-transition:enter="transition ease-out duration-200" 
+                x-transition:enter-start="opacity-0 scale-95" 
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl border border-slate-100"
+            >
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 ring-8 ring-red-50/50">
+                    <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                </div>
+
+                <h3 class="mt-4 text-base font-bold text-slate-800">Hapus Slider?</h3>
+                <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+                    Anda yakin ingin menghapus <span class="font-semibold text-slate-700" x-text="deleteTarget?.title"></span>? Berkas banner ini akan dihapus permanen.
+                </p>
+
+                <div class="mt-6 flex items-center gap-3">
+                    <button 
+                        type="button" 
+                        @click="deleteModalOpen = false" 
+                        class="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button 
+                        type="button" 
+                        @click="submitDelete()" 
+                        class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white shadow-soft hover:bg-red-700 transition-colors cursor-pointer"
+                    >
+                        Ya, Hapus
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var grid = document.getElementById('sliderGrid');
         if (!grid) return;
-        var dragEl = null;
 
-        grid.querySelectorAll('.slider-card').forEach(function (card) {
-            card.addEventListener('dragstart', function () {
-                dragEl = card;
-                card.classList.add('opacity-40');
-            });
-            card.addEventListener('dragend', function () {
-                card.classList.remove('opacity-40');
-                dragEl = null;
-                persistOrder();
-            });
-            card.addEventListener('dragover', function (e) {
-                e.preventDefault();
-                if (!dragEl || dragEl === card) return;
-                var rect = card.getBoundingClientRect();
-                var after = (e.clientY - rect.top) / rect.height > 0.5;
-                grid.insertBefore(dragEl, after ? card.nextSibling : card);
-            });
+        Sortable.create(grid, {
+            animation: 200,
+            ghostClass: 'opacity-30',
+            chosenClass: 'scale-95',
+            dragClass: 'shadow-2xl',
+            onEnd: function () {
+                var order = Array.from(grid.querySelectorAll('.slider-card')).map(function (c) { 
+                    return c.dataset.id; 
+                });
+
+                grid.querySelectorAll('.slider-card').forEach(function (card, index) {
+                    var orderText = card.querySelector('p.text-\\[11px\\]');
+                    if (orderText) {
+                        orderText.textContent = 'Urutan #' + (index + 1);
+                    }
+                });
+
+                fetch('{{ route('admin.sliders.reorder') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ order: order }),
+                }).then(function (res) {
+                    if (res.ok) {
+                        window.dispatchEvent(new CustomEvent('toast', { 
+                            detail: { type: 'success', message: 'Urutan slider berhasil diperbarui.' } 
+                        }));
+                    }
+                }).catch(function (err) {
+                    console.error('Gagal memperbarui urutan slider:', err);
+                });
+            }
         });
-
-        function persistOrder() {
-            var order = Array.prototype.map.call(grid.querySelectorAll('.slider-card'), function (c) { return c.dataset.id; });
-            fetch('{{ route('admin.sliders.reorder') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({ order: order }),
-            }).then(function (res) {
-                if (res.ok) {
-                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: 'Urutan slider berhasil disimpan.' } }));
-                }
-            });
-        }
     });
 </script>
 @endpush
-@endsection

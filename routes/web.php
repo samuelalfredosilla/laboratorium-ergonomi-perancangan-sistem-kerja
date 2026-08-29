@@ -14,6 +14,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController as PublicNewsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\OrganizationStructureController;
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\Admin\PracticumTaskController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,12 @@ Route::prefix('about')->name('about.')->group(function () {
     Route::get('/lecturer/{id}', [AboutController::class, 'lecturerDetail'])->name('lecturer-detail');
     Route::get('/epsikers', [AboutController::class, 'epsikers'])->name('epsikers');
     Route::get('/structure', [AboutController::class, 'structure'])->name('structure');
+});
+
+// Activities Pages
+Route::prefix('activities')->name('activities.')->group(function () {
+    Route::get('/practicum', [ActivityController::class, 'practicum'])->name('practicum');
+    Route::get('/events', [ActivityController::class, 'events'])->name('events');
 });
 
 // Public News & Articles
@@ -124,4 +132,8 @@ Route::prefix('admin')
             Route::put('/update', [OrganizationStructureController::class, 'update'])->name('update');
             Route::delete('/destroy', [OrganizationStructureController::class, 'destroy'])->name('destroy');
         });
+
+        // 7. Practicum Activities Management
+        Route::resource('practicum', PracticumTaskController::class);
+
     });

@@ -40,7 +40,7 @@
             <p class="mt-1 text-sm text-slate-500">Kelola bagan struktur organisasi laboratorium yang ditampilkan pada halaman publik.</p>
         </div>
         @if($structure && $structure->image_path)
-            <button @click="deleteModalOpen = true" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-100">
+            <button @click="deleteModalOpen = true" type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-100 transition-colors cursor-pointer">
                 <i class="fa-regular fa-trash-can text-xs"></i> Hapus Bagan Saat Ini
             </button>
         @endif
@@ -76,9 +76,9 @@
                     @endif
                 </div>
 
-                <div class="flex min-h-[340px] flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-50 p-2">
+                <div class="flex min-h-85 flex-col items-center justify-center overflow-hidden rounded-lg bg-slate-50 p-2">
                     <template x-if="imagePreview">
-                        <img :src="imagePreview" alt="Preview Bagan" class="max-h-[500px] w-auto rounded-lg object-contain shadow-sm transition-all duration-200">
+                        <img :src="imagePreview" alt="Preview Bagan" class="max-h-125 w-auto rounded-lg object-contain shadow-sm transition-all duration-200">
                     </template>
                     <template x-if="!imagePreview">
                         <div class="flex flex-col items-center gap-2 py-12 text-slate-400">
@@ -124,7 +124,7 @@
                             <template x-if="isNewFileSelected">
                                 <div class="flex flex-col items-center gap-1.5 p-4 text-emerald-700">
                                     <i class="fa-solid fa-circle-check text-2xl text-emerald-600"></i>
-                                    <span class="max-w-[220px] truncate font-semibold" x-text="selectedFileName"></span>
+                                    <span class="max-w-55 truncate font-semibold" x-text="selectedFileName"></span>
                                     <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold" x-text="selectedFileSize"></span>
                                     <span class="mt-1 text-[11px] text-slate-500 underline">Klik untuk ganti file lain</span>
                                 </div>
@@ -160,7 +160,7 @@
                     </div>
 
                     <div class="pt-2">
-                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-maroon-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-maroon-700">
+                        <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-maroon-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-maroon-700 transition-colors cursor-pointer">
                             <i class="fa-solid fa-floppy-disk text-xs"></i> Simpan Perubahan
                         </button>
                     </div>
@@ -169,25 +169,64 @@
         </div>
     </div>
 
-    {{-- ============================= DELETE CONFIRM MODAL ============================= --}}
-    <div x-cloak x-show="deleteModalOpen" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="deleteModalOpen = false">
-        <div class="absolute inset-0 bg-slate-900/50" @click="deleteModalOpen = false"></div>
-        <div x-show="deleteModalOpen" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-            class="relative w-full max-w-sm rounded-xl bg-white p-6 text-center shadow-2xl">
-            <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-500">
-                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
-            </span>
-            <h3 class="mt-4 text-base font-bold text-slate-800">Hapus Bagan Organisasi?</h3>
-            <p class="mt-1.5 text-sm text-slate-500">
-                Bagan yang sedang aktif akan dihapus dari server dan halaman publik. Tindakan ini tidak dapat dibatalkan.
-            </p>
-            <div class="mt-6 flex gap-3">
-                <button @click="deleteModalOpen = false" type="button" class="flex-1 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Batal</button>
-                <form method="POST" action="{{ route('admin.organization-structure.destroy') }}" class="flex-1">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700">Ya, Hapus</button>
-                </form>
+    {{-- ============================= DELETE CONFIRMATION MODAL (FULL SCREEN) ============================= --}}
+    <div 
+        x-cloak 
+        x-show="deleteModalOpen" 
+        class="fixed inset-0 overflow-y-auto"
+        style="z-index: 9999;"
+        @keydown.escape.window="deleteModalOpen = false"
+    >
+        <!-- Backdrop Overlay Full Viewport -->
+        <div 
+            x-show="deleteModalOpen"
+            x-transition:enter="transition-opacity ease-linear duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-linear duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" 
+            @click="deleteModalOpen = false"
+        ></div>
+
+        <!-- Modal Box Wrapper di Titik Tengah Layar Penuh -->
+        <div class="fixed inset-0 z-10 flex min-h-full items-center justify-center p-4">
+            <div 
+                x-show="deleteModalOpen" 
+                x-transition:enter="transition ease-out duration-200" 
+                x-transition:enter-start="opacity-0 scale-95" 
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="relative w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl border border-slate-100"
+            >
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-600 ring-8 ring-red-50/50">
+                    <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                </div>
+
+                <h3 class="mt-4 text-base font-bold text-slate-800">Hapus Bagan Organisasi?</h3>
+                <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+                    Bagan yang sedang aktif akan dihapus dari server dan halaman publik. Tindakan ini tidak dapat dibatalkan.
+                </p>
+
+                <div class="mt-6 flex items-center gap-3">
+                    <button 
+                        type="button" 
+                        @click="deleteModalOpen = false" 
+                        class="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <form method="POST" action="{{ route('admin.organization-structure.destroy') }}" class="flex-1">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white shadow-soft hover:bg-red-700 transition-colors cursor-pointer">
+                            Ya, Hapus
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

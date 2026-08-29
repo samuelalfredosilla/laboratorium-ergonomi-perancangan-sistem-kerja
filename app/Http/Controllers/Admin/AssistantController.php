@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use App\Models\ActivityLog;
 
 class AssistantController extends Controller
 {
@@ -126,6 +127,18 @@ class AssistantController extends Controller
     {
         $data = $this->validatedFields($request, $assistant);
 
+        // 1. Snapshot data lama sebelum diubah
+        $oldValues = [
+            'Nama Lengkap'  => $assistant->name,
+            'NIM'           => $assistant->nim ?? '—',
+            'Periode'       => $assistant->period ?? '—',
+            'Divisi'        => $assistant->division ?? '—',
+            'Urutan Tampil' => (string) ($assistant->sort_order ?? 1),
+            'Email'         => $assistant->email ?? '—',
+            'Foto Profil'   => $assistant->photo ? 'Ada Foto' : 'Tanpa Foto',
+        ];
+
+        $photoChanged = false;
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             if (! $file->isValid()) {
@@ -137,10 +150,12 @@ class AssistantController extends Controller
             $extension = $file->getClientOriginalExtension();
             $safeFileName = Str::random(40) . '.' . strtolower($extension);
             $data['photo'] = $file->storeAs('assistants', $safeFileName, 'public');
+            $photoChanged = true;
         }
 
         $data['sort_order'] = $data['sort_order'] ?? 1;
 
+        // 2. Eksekusi database transaction
         DB::transaction(function () use ($assistant, $data) {
             $assistant->update($data);
             if (! empty($assistant->period)) {
@@ -148,7 +163,51 @@ class AssistantController extends Controller
             }
         });
 
-        Notification::log('Data asisten "' . $assistant->name . '" diperbarui.', 'fa-user-pen', 'maroon', route('admin.assistants.index'));
+        // 3. Snapshot data baru setelah diperbarui
+        $newValues = [
+            'Nama Lengkap'  => $assistant->name,
+            'NIM'           => $assistant->nim ?? '—',
+            'Periode'       => $assistant->period ?? '—',
+            'Divisi'        => $assistant->division ?? '—',
+            'Urutan Tampil' => (string) ($assistant->sort_order ?? 1),
+            'Email'         => $assistant->email ?? '—',
+            'Foto Profil'   => $photoChanged ? 'Foto Diperbarui' : ($assistant->photo ? 'Ada Foto' : 'Tanpa Foto'),
+        ];
+
+        // 4. Bandingkan field mana saja yang benar-benar berubah
+        $changes = [];
+        $oldChanges = [];
+
+        foreach ($newValues as $key => $newVal) {
+            $oldVal = $oldValues[$key] ?? null;
+            if ((string)$oldVal !== (string)$newVal) {
+                $changes[$key] = $newVal;
+                $oldChanges[$key] = $oldVal;
+            }
+        }
+
+        // 5. Catat ke notifikasi lonceng navbar & log aktivitas riwayat perubahan
+        Notification::log(
+            'Data asisten "' . $assistant->name . '" diperbarui.',
+            'fa-user-pen',
+            'maroon',
+            route('admin.assistants.show', $assistant)
+        );
+
+        if (! empty($changes)) {
+            ActivityLog::record($assistant, 'updated', 'Memperbarui data asisten: ' . $assistant->name, [
+                'old' => $oldChanges,
+                'new' => $changes,
+            ]);
+        }
+
+        // 6. Redirect cerdas berdasarkan asal halaman
+        $redirectTo = $request->input('redirect_to');
+
+        if ($redirectTo === 'show') {
+            return redirect()->route('admin.assistants.show', $assistant)
+                ->with('success', 'Data asisten "' . $assistant->name . '" berhasil diperbarui.');
+        }
 
         return redirect()->route('admin.assistants.index')
             ->with('success', 'Data asisten "' . $assistant->name . '" berhasil diperbarui.');

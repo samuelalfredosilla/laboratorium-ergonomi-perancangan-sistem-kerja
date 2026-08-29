@@ -27,10 +27,18 @@ class News extends Model
 
     protected $casts = [
         'is_published' => 'boolean',
-        'published_at' => 'datetime',
+        'published_at' => 'date:Y-m-d',
     ];
 
-    protected $appends = ['image_url'];
+    protected $appends = [
+        'published_date_formatted',
+        'image_url',
+    ];
+
+    public function getPublishedDateFormattedAttribute(): string
+    {
+        return $this->published_at ? $this->published_at->format('Y-m-d') : '';
+    }
 
     public function getImageUrlAttribute(): string
     {

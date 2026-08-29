@@ -25,7 +25,8 @@ class AboutController extends Controller
     public function lecturers()
     {
         $lecturers = DB::table('lecturers')
-            ->orderBy('name', 'asc')
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('id', 'asc')
             ->get();
 
         return view('about.lecturer', compact('lecturers'));

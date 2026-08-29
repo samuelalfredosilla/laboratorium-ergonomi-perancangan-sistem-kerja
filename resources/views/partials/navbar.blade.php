@@ -14,7 +14,15 @@
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active-link' : '' }}">HOME</a>
 
             <!-- 2. ACTIVITIES -->
-            <a href="#activities" class="nav-link">ACTIVITIES</a>
+            <div class="nav-dropdown">
+                <a href="javascript:void(0)" class="nav-link dropdown-toggle {{ request()->routeIs('activities.*') ? 'active-link' : '' }}">
+                    ACTIVITIES <i class="fa-solid fa-chevron-down dropdown-icon"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="{{ route('activities.practicum') }}" class="dropdown-item {{ request()->routeIs('activities.practicum') ? 'active-item' : '' }}">PRACTICUM</a>
+                    <a href="{{ route('activities.events') }}" class="dropdown-item {{ request()->routeIs('activities.events') ? 'active-item' : '' }}">LABORATORY EVENTS</a>
+                </div>
+            </div>
 
             <!-- 3. FACILITIES -->
             <a href="#facilities" class="nav-link">FACILITIES</a>

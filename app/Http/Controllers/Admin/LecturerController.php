@@ -22,23 +22,26 @@ class LecturerController extends Controller
         }
 
         $lecturers = Lecturer::with(['educations', 'researches', 'communityServices'])
-            ->when($search, fn ($q) => $q->where(function ($query) use ($search) {
-                $query->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('nip', 'like', '%' . $search . '%');
-            }))
-            ->when($request->role === 'chief', fn ($q) => $q->where(function ($query) {
-                $query->where('role', 'like', '%chief%')
-                      ->orWhere('role', 'like', '%head%')
-                      ->orWhere('role', 'like', '%kepala%');
-            }))
-            ->when($request->role === 'member', fn ($q) => $q->where(function ($query) {
-                $query->where('role', 'not like', '%chief%')
-                      ->where('role', 'not like', '%head%')
-                      ->where('role', 'not like', '%kepala%');
-            }))
-            ->orderByDesc('sort_order')
-            ->orderBy('name')
-            ->get();
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                      ->orWhere('nip', 'like', '%' . $search . '%')
+                      ->orWhere('expertise', 'like', '%' . $search . '%')
+                      ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            })
+            ->when($request->filled('role'), function ($query) use ($request) {
+                if ($request->role === 'chief') {
+                    $query->where('role', 'Laboratory Chief');
+                } elseif ($request->role === 'member') {
+                    $query->where('role', 'Lecturer of Interest');
+                }
+            })
+            // Urutkan berdasarkan sort_order terkecil ke terbesar (1, 2, 3...)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('id', 'asc')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.lecturers.index', compact('lecturers'));
     }
@@ -85,42 +88,129 @@ class LecturerController extends Controller
     public function update(Request $request, Lecturer $lecturer)
     {
         $data = $this->validatedFields($request, $lecturer);
-        $this->validateRepeaters($request);
 
+        // 1. Snapshot nilai lama sebelum diperbarui
+        $oldValues = [
+            'Nama Lengkap'         => $lecturer->name,
+            'NIP'                  => $lecturer->nip ?? '—',
+            'Peran'                => $lecturer->role,
+            'Urutan Tampil'        => (string) ($lecturer->sort_order ?? 1),
+            'Keahlian Utama'       => $lecturer->expertise ?? '—',
+            'Email'                => $lecturer->email ?? '—',
+            'Google Scholar'       => $lecturer->scholar_link ?? '—',
+            'LinkedIn'             => $lecturer->linkedin_link ?? '—',
+            'Foto Profil'          => $lecturer->photo ? 'Ada Foto' : 'Tanpa Foto',
+            'Riwayat Pendidikan'   => $lecturer->educations->count() . ' data',
+            'Judul Penelitian'     => $lecturer->researches->count() . ' data',
+            'Pengabdian Masyarakat'=> $lecturer->communityServices->count() . ' data',
+        ];
+
+        $photoChanged = false;
         if ($request->hasFile('photo')) {
             $file = $request->file('photo');
             if (! $file->isValid()) {
-                return back()->withErrors(['photo' => 'File foto rusak atau tidak valid.'])->withInput();
+                return back()->withErrors(['photo' => 'File foto tidak valid atau rusak.'])->withInput();
             }
 
-            $this->safeDeleteFile($lecturer->photo);
+            if ($lecturer->photo && Storage::disk('public')->exists($lecturer->photo)) {
+                Storage::disk('public')->delete($lecturer->photo);
+            }
 
             $extension = $file->getClientOriginalExtension();
             $safeFileName = Str::random(40) . '.' . strtolower($extension);
             $data['photo'] = $file->storeAs('lecturers', $safeFileName, 'public');
+            $photoChanged = true;
         }
 
-        $oldValues = $lecturer->getOriginal();
-
+        // 2. Eksekusi pembaruan profil dan relasi repeater
         DB::transaction(function () use ($lecturer, $data, $request) {
             $lecturer->update($data);
-            $this->syncRepeaters($lecturer, $request);
+
+            // Sync Pendidikan
+            $lecturer->educations()->delete();
+            if ($request->has('educations')) {
+                foreach ($request->input('educations', []) as $edu) {
+                    if (! empty($edu['institution'])) {
+                        $lecturer->educations()->create([
+                            'degree'      => strip_tags(trim($edu['degree'] ?? 'S1')),
+                            'institution' => strip_tags(trim($edu['institution'])),
+                            'year_range'  => strip_tags(trim($edu['year_range'] ?? '')),
+                        ]);
+                    }
+                }
+            }
+
+            // Sync Penelitian
+            $lecturer->researches()->delete();
+            if ($request->has('researches')) {
+                foreach ($request->input('researches', []) as $res) {
+                    if (! empty($res['title'])) {
+                        $lecturer->researches()->create([
+                            'title' => strip_tags(trim($res['title'])),
+                            'year'  => strip_tags(trim($res['year'] ?? '')),
+                        ]);
+                    }
+                }
+            }
+
+            // Sync Pengabdian
+            $lecturer->communityServices()->delete();
+            if ($request->has('services')) {
+                foreach ($request->input('services', []) as $srv) {
+                    if (! empty($srv['title'])) {
+                        $lecturer->communityServices()->create([
+                            'title' => strip_tags(trim($srv['title'])),
+                            'year'  => strip_tags(trim($srv['year'] ?? '')),
+                        ]);
+                    }
+                }
+            }
         });
 
-        $changes = $lecturer->getChanges();
-        $oldChanges = array_intersect_key($oldValues, $changes);
+        // 3. Snapshot nilai baru setelah update
+        $lecturer->load(['educations', 'researches', 'communityServices']);
+        $newValues = [
+            'Nama Lengkap'         => $lecturer->name,
+            'NIP'                  => $lecturer->nip ?? '—',
+            'Peran'                => $lecturer->role,
+            'Urutan Tampil'        => (string) ($lecturer->sort_order ?? 1),
+            'Keahlian Utama'       => $lecturer->expertise ?? '—',
+            'Email'                => $lecturer->email ?? '—',
+            'Google Scholar'       => $lecturer->scholar_link ?? '—',
+            'LinkedIn'             => $lecturer->linkedin_link ?? '—',
+            'Foto Profil'          => $photoChanged ? 'Foto Diperbarui' : ($lecturer->photo ? 'Ada Foto' : 'Tanpa Foto'),
+            'Riwayat Pendidikan'   => $lecturer->educations->count() . ' data',
+            'Judul Penelitian'     => $lecturer->researches->count() . ' data',
+            'Pengabdian Masyarakat'=> $lecturer->communityServices->count() . ' data',
+        ];
 
-        Notification::log('Data dosen "' . $lecturer->name . '" diperbarui.', 'fa-user-pen', 'maroon', route('admin.lecturers.index'));
+        // 4. Deteksi field yang berubah
+        $changes = [];
+        $oldChanges = [];
+
+        foreach ($newValues as $key => $newVal) {
+            $oldVal = $oldValues[$key] ?? null;
+            if ((string)$oldVal !== (string)$newVal) {
+                $changes[$key] = $newVal;
+                $oldChanges[$key] = $oldVal;
+            }
+        }
+
+        Notification::log(
+            'Data dosen "' . $lecturer->name . '" diperbarui.',
+            'fa-user-gear',
+            'maroon',
+            route('admin.lecturers.show', $lecturer)
+        );
 
         if (! empty($changes)) {
-            ActivityLog::record($lecturer, 'updated', 'Memperbarui data dosen: ' . $lecturer->name, [
+            ActivityLog::record($lecturer, 'updated', 'Memperbarui profil dosen: ' . $lecturer->name, [
                 'old' => $oldChanges,
                 'new' => $changes,
             ]);
         }
 
-        return redirect()->back()
-            ->with('success', 'Data dosen "' . $lecturer->name . '" berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Data dosen "' . $lecturer->name . '" berhasil diperbarui.');
     }
 
     public function destroy(Lecturer $lecturer)
@@ -149,46 +239,41 @@ class LecturerController extends Controller
 
     private function validatedFields(Request $request, ?Lecturer $lecturer = null): array
     {
-        $lecturerId = $lecturer ? $lecturer->id : null;
-
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:150'],
-            'nip'           => ['nullable', 'string', 'max:30', 'regex:/^[0-9\s\.\-]+$/', Rule::unique('lecturers', 'nip')->ignore($lecturerId)],
+            'nip'           => ['nullable', 'string', 'max:50'],
             'role'          => ['required', 'string', 'max:100'],
             'expertise'     => ['nullable', 'string', 'max:255'],
-            'email'         => ['nullable', 'email:rfc,dns', 'max:150', Rule::unique('lecturers', 'email')->ignore($lecturerId)],
+            'email'         => ['nullable', 'email', 'max:150'],
             'scholar_link'  => ['nullable', 'url', 'max:255'],
             'linkedin_link' => ['nullable', 'url', 'max:255'],
+            'sort_order'    => ['nullable', 'integer', 'min:1'], // Validasi nomor urutan
             'photo'         => [
                 'nullable',
                 'file',
                 'image',
                 'mimes:jpeg,png,jpg,webp',
                 'mimetypes:image/jpeg,image/png,image/webp',
-                'max:8192', // Maksimal 8MB
-                'dimensions:max_width=4000,max_height=4000',
+                'max:5120',
             ],
         ], [
             'name.required'       => 'Nama lengkap dan gelar dosen wajib diisi.',
-            'nip.regex'           => 'Format NIP hanya boleh memuat angka dan tanda hubung.',
-            'nip.unique'          => 'NIP tersebut sudah terdaftar di sistem.',
             'role.required'       => 'Peran dosen wajib dipilih.',
-            'email.email'         => 'Format alamat email tidak valid.',
-            'email.unique'        => 'Email tersebut sudah terdaftar.',
+            'email.email'         => 'Format email tidak valid.',
             'scholar_link.url'    => 'Format URL Google Scholar tidak valid.',
             'linkedin_link.url'   => 'Format URL LinkedIn tidak valid.',
-            'photo.image'         => 'File foto harus berupa gambar valid.',
-            'photo.mimes'         => 'Format foto yang diperbolehkan: JPG, PNG, atau WebP.',
-            'photo.max'           => 'Ukuran foto profil maksimal 8 MB.',
+            'sort_order.integer'  => 'Urutan tampil harus berupa angka.',
+            'photo.image'         => 'Berkas foto harus berupa gambar.',
         ]);
 
-        // Sanitasi teks dari tag HTML
-        $data['name'] = strip_tags(trim($data['name']));
-        $data['role'] = strip_tags(trim($data['role']));
-        $data['expertise'] = isset($data['expertise']) ? strip_tags(trim($data['expertise'])) : null;
-        $data['nip'] = isset($data['nip']) ? preg_replace('/[^0-9]/', '', $data['nip']) : null;
-
-        unset($data['photo']);
+        $data['name']          = strip_tags(trim($data['name']));
+        $data['nip']           = $data['nip'] ? strip_tags(trim($data['nip'])) : null;
+        $data['role']          = strip_tags(trim($data['role']));
+        $data['expertise']     = $data['expertise'] ? strip_tags(trim($data['expertise'])) : null;
+        $data['email']         = $data['email'] ? trim($data['email']) : null;
+        $data['scholar_link']  = $data['scholar_link'] ? trim($data['scholar_link']) : null;
+        $data['linkedin_link'] = $data['linkedin_link'] ? trim($data['linkedin_link']) : null;
+        $data['sort_order']    = (int) ($data['sort_order'] ?? (Lecturer::max('sort_order') + 1));
 
         return $data;
     }
