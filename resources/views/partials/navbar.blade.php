@@ -19,8 +19,8 @@
                     ACTIVITIES <i class="fa-solid fa-chevron-down dropdown-icon"></i>
                 </a>
                 <div class="dropdown-menu">
-                    <a href="{{ route('activities.practicum') }}" class="dropdown-item {{ request()->routeIs('activities.practicum') ? 'active-item' : '' }}">PRACTICUM</a>
-                    <a href="{{ route('activities.events') }}" class="dropdown-item {{ request()->routeIs('activities.events') ? 'active-item' : '' }}">LABORATORY EVENTS</a>
+                    <a href="{{ route('activities.practicum') }}" class="dropdown-item {{ request()->routeIs('activities.practicum*') ? 'active-item' : '' }}">PRACTICUM</a>
+                    <a href="{{ route('activities.events') }}" class="dropdown-item {{ request()->routeIs('activities.events*') ? 'active-item' : '' }}">LABORATORY EVENTS</a>
                 </div>
             </div>
 

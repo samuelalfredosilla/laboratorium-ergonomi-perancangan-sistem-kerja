@@ -31,13 +31,13 @@
             this.panelOpen = true;
         },
         openEdit(lecturer) {
-            this.form = { 
-                name: lecturer.name, 
-                nip: lecturer.nip || '', 
-                role: lecturer.role || 'Lecturer of Interest', 
-                expertise: lecturer.expertise || '', 
-                email: lecturer.email || '', 
-                scholar_link: lecturer.scholar_link || '', 
+            this.form = {
+                name: lecturer.name,
+                nip: lecturer.nip || '',
+                role: lecturer.role || 'Lecturer of Interest',
+                expertise: lecturer.expertise || '',
+                email: lecturer.email || '',
+                scholar_link: lecturer.scholar_link || '',
                 linkedin_link: lecturer.linkedin_link || '',
                 sort_order: lecturer.sort_order || 1
             };
@@ -95,12 +95,12 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, NIP, atau keahlian..."
                     class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-maroon-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-maroon-100">
             </div>
-            
+
             <div class="flex flex-wrap items-center gap-2">
                 <select name="role" onchange="this.form.submit()" class="rounded-lg border border-slate-200 bg-slate-50 py-2 pl-3 pr-8 text-xs font-semibold text-slate-600 focus:border-maroon-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-maroon-100">
                     <option value="">Semua Peran</option>
-                    <option value="chief" @selected(request('role') === 'chief')>Kepala Lab</option>
-                    <option value="member" @selected(request('role') === 'member')>Dosen Anggota</option>
+                    <option value="chief" @selected(request('role') === 'chief')>Laboratory Chief</option>
+                    <option value="member" @selected(request('role') === 'member')>Lecturer of Interest</option>
                 </select>
 
                 @if (request()->anyFilled(['search', 'role']))
@@ -430,15 +430,15 @@
     </div>
 
     {{-- ============================= DELETE CONFIRMATION MODAL (FULL SCREEN) ============================= --}}
-    <div 
-        x-cloak 
-        x-show="deleteModalOpen" 
+    <div
+        x-cloak
+        x-show="deleteModalOpen"
         class="fixed inset-0 overflow-y-auto"
         style="z-index: 9999;"
         @keydown.escape.window="deleteModalOpen = false"
     >
         <!-- Backdrop Overlay Full Viewport -->
-        <div 
+        <div
             x-show="deleteModalOpen"
             x-transition:enter="transition-opacity ease-linear duration-300"
             x-transition:enter-start="opacity-0"
@@ -446,16 +446,16 @@
             x-transition:leave="transition-opacity ease-linear duration-200"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" 
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
             @click="deleteModalOpen = false"
         ></div>
 
         <!-- Modal Box Wrapper di Titik Tengah Layar Penuh -->
         <div class="fixed inset-0 z-10 flex min-h-full items-center justify-center p-4">
-            <div 
-                x-show="deleteModalOpen" 
-                x-transition:enter="transition ease-out duration-200" 
-                x-transition:enter-start="opacity-0 scale-95" 
+            <div
+                x-show="deleteModalOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
                 x-transition:enter-end="opacity-100 scale-100"
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 scale-100"
@@ -472,16 +472,16 @@
                 </p>
 
                 <div class="mt-6 flex items-center gap-3">
-                    <button 
-                        type="button" 
-                        @click="deleteModalOpen = false" 
+                    <button
+                        type="button"
+                        @click="deleteModalOpen = false"
                         class="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                         Batal
                     </button>
-                    <button 
-                        type="button" 
-                        @click="submitDelete()" 
+                    <button
+                        type="button"
+                        @click="submitDelete()"
                         class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white shadow-soft hover:bg-red-700 transition-colors cursor-pointer"
                     >
                         Ya, Hapus

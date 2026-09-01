@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\OrganizationStructureController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\PracticumTaskController;
+use App\Http\Controllers\Admin\EventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,9 @@ Route::prefix('about')->name('about.')->group(function () {
 Route::prefix('activities')->name('activities.')->group(function () {
     Route::get('/practicum', [ActivityController::class, 'practicum'])->name('practicum');
     Route::get('/events', [ActivityController::class, 'events'])->name('events');
+
+    Route::get('/events/{id}', [ActivityController::class, 'eventDetail'])->name('events.detail');
+    Route::get('/practicum/{id}', [ActivityController::class, 'practicumDetail'])->name('practicum.detail');
 });
 
 // Public News & Articles
@@ -135,5 +139,8 @@ Route::prefix('admin')
 
         // 7. Practicum Activities Management
         Route::resource('practicum', PracticumTaskController::class);
+
+        // 8. Events Activities Management
+        Route::resource('events', EventController::class);
 
     });

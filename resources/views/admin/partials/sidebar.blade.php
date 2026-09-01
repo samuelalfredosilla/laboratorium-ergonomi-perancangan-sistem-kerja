@@ -11,6 +11,7 @@
             'label' => 'Management',
             'items' => [
                 ['label' => 'Practicum Activities', 'icon' => 'fa-clipboard-list', 'route' => 'admin.practicum.index', 'active' => 'admin.practicum.*'],
+                ['label' => 'Events', 'icon' => 'fa-calendar-days', 'route' => 'admin.events.index', 'active' => 'admin.events.*'], 
                 ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => 'admin.lecturers.index', 'active' => 'admin.lecturers.*'],
                 ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => 'admin.news.index', 'active' => 'admin.news.*'],
                 ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => 'admin.categories.index'],
