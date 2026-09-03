@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\OrganizationStructureController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Admin\PracticumTaskController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\Admin\EquipmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +45,11 @@ Route::prefix('activities')->name('activities.')->group(function () {
 
     Route::get('/events/{id}', [ActivityController::class, 'eventDetail'])->name('events.detail');
     Route::get('/practicum/{id}', [ActivityController::class, 'practicumDetail'])->name('practicum.detail');
+});
+
+// Facilities Pages
+Route::prefix('facilities')->name('facilities.')->group(function () {
+    Route::get('/equipment', [FacilityController::class, 'equipment'])->name('equipment');
 });
 
 // Public News & Articles
@@ -138,9 +145,35 @@ Route::prefix('admin')
         });
 
         // 7. Practicum Activities Management
-        Route::resource('practicum', PracticumTaskController::class);
+        Route::prefix('practicum')->name('practicum.')->group(function () {
+            Route::get('/', [PracticumTaskController::class, 'index'])->name('index');
+            Route::post('/', [PracticumTaskController::class, 'store'])->name('store');
+            Route::get('/{practicum}', [PracticumTaskController::class, 'show'])->name('show');
+            Route::put('/{practicum}', [PracticumTaskController::class, 'update'])->name('update');
+            Route::delete('/{practicum}', [PracticumTaskController::class, 'destroy'])->name('destroy');
+        });
 
         // 8. Events Activities Management
-        Route::resource('events', EventController::class);
+        Route::prefix('events')->name('events.')->group(function () {
+            Route::get('/', [EventController::class, 'index'])->name('index');
+            Route::post('/', [EventController::class, 'store'])->name('store');
+            Route::get('/{event}', [EventController::class, 'show'])->name('show');
+            Route::put('/{event}', [EventController::class, 'update'])->name('update');
+            Route::delete('/{event}', [EventController::class, 'destroy'])->name('destroy');
+        });
 
+        // 9. Equipment Management
+        Route::prefix('equipment')->name('equipment.')->group(function () {
+            // Rute Kategori Peralatan (Wajib diletakkan sebelum rute berparameter {equipment})
+            Route::post('/categories/store', [EquipmentController::class, 'storeCategory'])->name('categories.store');
+            Route::put('/categories/rename', [EquipmentController::class, 'renameCategory'])->name('categories.rename');
+            Route::delete('/categories/destroy', [EquipmentController::class, 'destroyCategory'])->name('categories.destroy');
+
+            // Rute Utama Peralatan
+            Route::get('/', [EquipmentController::class, 'index'])->name('index');
+            Route::post('/', [EquipmentController::class, 'store'])->name('store');
+            Route::get('/{equipment}', [EquipmentController::class, 'show'])->name('show');
+            Route::put('/{equipment}', [EquipmentController::class, 'update'])->name('update');
+            Route::delete('/{equipment}', [EquipmentController::class, 'destroy'])->name('destroy');
+        });
     });

@@ -25,7 +25,14 @@
             </div>
 
             <!-- 3. FACILITIES -->
-            <a href="#facilities" class="nav-link">FACILITIES</a>
+            <div class="nav-dropdown">
+                <a href="javascript:void(0)" class="nav-link dropdown-toggle {{ request()->routeIs('facilities.*') ? 'active-link' : '' }}">
+                    FACILITIES <i class="fa-solid fa-chevron-down dropdown-icon"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="{{ route('facilities.equipment') }}" class="dropdown-item {{ request()->routeIs('facilities.equipment*') ? 'active-item' : '' }}">EQUIPMENT</a>
+                </div>
+            </div>
 
             <!-- 4. ABOUT US (Dropdown) -->
             <div class="nav-dropdown">
