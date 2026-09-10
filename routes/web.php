@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\PracticumTaskController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\Admin\EquipmentController;
+use App\Http\Controllers\AchievementController;
+use App\Http\Controllers\Admin\AchievementController as AdminAchievementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +53,10 @@ Route::prefix('activities')->name('activities.')->group(function () {
 Route::prefix('facilities')->name('facilities.')->group(function () {
     Route::get('/equipment', [FacilityController::class, 'equipment'])->name('equipment');
 });
+
+// Achievement Pages
+Route::get('/achievement', [AchievementController::class, 'index'])->name('achievement.index');
+Route::get('/achievement/{id}', [AchievementController::class, 'show'])->name('achievement.show');
 
 // Public News & Articles
 Route::get('/news', [PublicNewsController::class, 'index'])->name('news.index');
@@ -119,15 +125,7 @@ Route::prefix('admin')
             Route::patch('/{news}/toggle', [NewsController::class, 'toggle'])->name('toggle');
         });
 
-        // 4. Categories Management
-        Route::prefix('categories')->name('categories.')->group(function () {
-            Route::get('/', [CategoryController::class, 'index'])->name('index');
-            Route::post('/', [CategoryController::class, 'store'])->name('store');
-            Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
-            Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
-        });
-
-        // 5. Home Sliders Management
+        // 4. Home Sliders Management
         Route::prefix('sliders')->name('sliders.')->group(function () {
             Route::get('/', [HomeSliderController::class, 'index'])->name('index');
             Route::post('/', [HomeSliderController::class, 'store'])->name('store');
@@ -137,14 +135,14 @@ Route::prefix('admin')
             Route::patch('/{slider}/toggle', [HomeSliderController::class, 'toggle'])->name('toggle');
         });
 
-        // 6. Organization Structure Management
+        // 5. Organization Structure Management
         Route::prefix('organization-structure')->name('organization-structure.')->group(function () {
             Route::get('/', [OrganizationStructureController::class, 'index'])->name('index');
             Route::put('/update', [OrganizationStructureController::class, 'update'])->name('update');
             Route::delete('/destroy', [OrganizationStructureController::class, 'destroy'])->name('destroy');
         });
 
-        // 7. Practicum Activities Management
+        // 6. Practicum Activities Management
         Route::prefix('practicum')->name('practicum.')->group(function () {
             Route::get('/', [PracticumTaskController::class, 'index'])->name('index');
             Route::post('/', [PracticumTaskController::class, 'store'])->name('store');
@@ -153,7 +151,7 @@ Route::prefix('admin')
             Route::delete('/{practicum}', [PracticumTaskController::class, 'destroy'])->name('destroy');
         });
 
-        // 8. Events Activities Management
+        // 7. Events Activities Management
         Route::prefix('events')->name('events.')->group(function () {
             Route::get('/', [EventController::class, 'index'])->name('index');
             Route::post('/', [EventController::class, 'store'])->name('store');
@@ -162,7 +160,7 @@ Route::prefix('admin')
             Route::delete('/{event}', [EventController::class, 'destroy'])->name('destroy');
         });
 
-        // 9. Equipment Management
+        // 8. Equipment Management
         Route::prefix('equipment')->name('equipment.')->group(function () {
             // Rute Kategori Peralatan (Wajib diletakkan sebelum rute berparameter {equipment})
             Route::post('/categories/store', [EquipmentController::class, 'storeCategory'])->name('categories.store');
@@ -175,5 +173,15 @@ Route::prefix('admin')
             Route::get('/{equipment}', [EquipmentController::class, 'show'])->name('show');
             Route::put('/{equipment}', [EquipmentController::class, 'update'])->name('update');
             Route::delete('/{equipment}', [EquipmentController::class, 'destroy'])->name('destroy');
+        });
+
+        // 9. Achievement Management (ADMIN)
+        Route::prefix('achievements')->name('achievements.')->group(function () {
+            Route::get('/', [AdminAchievementController::class, 'index'])->name('index');
+            Route::post('/', [AdminAchievementController::class, 'store'])->name('store');
+            Route::get('/{achievement}', [AdminAchievementController::class, 'show'])->name('show');
+            Route::put('/{achievement}', [AdminAchievementController::class, 'update'])->name('update');
+            Route::delete('/{achievement}', [AdminAchievementController::class, 'destroy'])->name('destroy');
+            Route::patch('/{achievement}/toggle', [AdminAchievementController::class, 'toggle'])->name('toggle');
         });
     });

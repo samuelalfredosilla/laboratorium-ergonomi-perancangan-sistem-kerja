@@ -66,15 +66,15 @@ class CategoryController extends Controller
             'Kategori baru "' . $category->name . '" ditambahkan.',
             'fa-tags',
             'success',
-            route('admin.categories.index')
+            route('admin.news.index') // <-- Diubah agar notifikasi mengarah ke News
         );
 
         ActivityLog::record($category, 'created', 'Menambahkan kategori baru: ' . $category->name, [
             'attributes' => $category->toArray(),
         ]);
 
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Kategori "' . $category->name . '" berhasil ditambahkan.');
+        // <-- UBAH REDIRECT MENJADI BACK() DISINI -->
+        return back()->with('success', 'Kategori "' . $category->name . '" berhasil ditambahkan.');
     }
 
     public function update(Request $request, Category $category)
@@ -117,7 +117,7 @@ class CategoryController extends Controller
             'Kategori "' . $category->name . '" diperbarui.',
             'fa-tags',
             'maroon',
-            route('admin.categories.index')
+            route('admin.news.index') // <-- Diubah agar notifikasi mengarah ke News
         );
 
         if ($oldName !== $category->name) {
@@ -127,8 +127,8 @@ class CategoryController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Kategori "' . $category->name . '" berhasil diperbarui.');
+        // <-- UBAH REDIRECT MENJADI BACK() DISINI -->
+        return back()->with('success', 'Kategori "' . $category->name . '" berhasil diperbarui.');
     }
 
     public function destroy(Category $category)
@@ -147,13 +147,14 @@ class CategoryController extends Controller
             ? "Kategori \"{$name}\" berhasil dihapus. {$newsCount} berita terkait dialihkan ke Tanpa Kategori (None)."
             : "Kategori \"{$name}\" berhasil dihapus.";
 
-        Notification::log($message, 'fa-trash-can', 'danger', route('admin.categories.index'));
+        Notification::log($message, 'fa-trash-can', 'danger', route('admin.news.index')); // <-- Diubah agar notifikasi mengarah ke News
 
         ActivityLog::record($category, 'deleted', 'Menghapus kategori: ' . $name, [
             'attributes' => $backupData,
         ]);
 
-        return redirect()->route('admin.categories.index')->with('success', $message);
+        // <-- UBAH REDIRECT MENJADI BACK() DISINI -->
+        return back()->with('success', $message);
     }
 
     /**

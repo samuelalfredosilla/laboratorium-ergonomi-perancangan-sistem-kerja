@@ -6,7 +6,7 @@
        1. CONTAINER & KARTU UTAMA
        ========================================= */
     .detail-container {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: -2.5rem auto 4rem auto;
         padding: 0 1.25rem;
         position: relative;

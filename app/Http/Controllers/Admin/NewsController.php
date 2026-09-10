@@ -38,7 +38,7 @@ class NewsController extends Controller
             ->paginate(8)
             ->withQueryString();
 
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::withCount('news')->orderBy('name')->get();
 
         return view('admin.news.index', compact('news', 'categories'));
     }
@@ -264,7 +264,7 @@ class NewsController extends Controller
     private function cleanHtmlContent(string $html): string
     {
         $allowedTags = '<p><br><b><strong><i><em><u><strike><s><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><a><img><table><thead><tbody><tr><th><td><hr><code><pre>';
-        
+
         $cleaned = strip_tags($html, $allowedTags);
 
         // Hapus atribut berbahaya (on*, javascript:, data:)

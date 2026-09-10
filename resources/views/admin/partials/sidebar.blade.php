@@ -8,22 +8,42 @@
             ],
         ],
         [
-            'label' => 'Management',
+            'label' => 'Home',
+            'items' => [
+                ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => 'admin.news.index', 'active' => 'admin.news.*'],
+                ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => 'admin.sliders.index'],
+            ],
+        ],
+        [
+            'label' => 'Activities',
             'items' => [
                 ['label' => 'Practicum Activities', 'icon' => 'fa-clipboard-list', 'route' => 'admin.practicum.index', 'active' => 'admin.practicum.*'],
-                ['label' => 'Events', 'icon' => 'fa-calendar-days', 'route' => 'admin.events.index', 'active' => 'admin.events.*'], 
+                ['label' => 'Events', 'icon' => 'fa-calendar-days', 'route' => 'admin.events.index', 'active' => 'admin.events.*'],
+            ],
+        ],
+        [
+            'label' => 'Facilities',
+            'items' => [
+                ['label' => 'Equipment', 'icon' => 'fa-microscope', 'route' => 'admin.equipment.index', 'active' => 'admin.equipment.*'],
+            ],
+        ],
+        [
+            'label' => 'About Us',
+            'items' => [
                 ['label' => 'Lecturers & Staff', 'icon' => 'fa-users', 'route' => 'admin.lecturers.index', 'active' => 'admin.lecturers.*'],
-                ['label' => 'News & Articles', 'icon' => 'fa-newspaper', 'route' => 'admin.news.index', 'active' => 'admin.news.*'],
-                ['label' => 'Categories', 'icon' => 'fa-tags', 'route' => 'admin.categories.index'],
-                ['label' => 'Home Sliders', 'icon' => 'fa-images', 'route' => 'admin.sliders.index'],
+                ['label' => 'EPSIKERS / Assistants', 'icon' => 'fa-user-check', 'route' => 'admin.assistants.index', 'active' => 'admin.assistants.*'],
                 ['label' => 'Organization Structure', 'icon' => 'fa-sitemap', 'route' => 'admin.organization-structure.index', 'active' => 'admin.organization-structure.*'],
             ],
         ],
         [
-            'label' => 'Lab Assets & Services',
+            'label' => 'Achievements',
             'items' => [
-                ['label' => 'EPSIKERS / Assistants', 'icon' => 'fa-user-check', 'route' => 'admin.assistants.index', 'active' => 'admin.assistants.*'],
-                ['label' => 'Equipment', 'icon' => 'fa-microscope', 'route' => 'admin.equipment.index', 'active' => 'admin.equipment.*'],
+                ['label' => 'Achievements', 'icon' => 'fa-trophy', 'route' => 'admin.achievements.index', 'active' => 'admin.achievements.*'],
+            ],
+        ],
+        [
+            'label' => 'Lab Procedures',
+            'items' => [
                 ['label' => 'Lab Requests / Services', 'icon' => 'fa-clipboard-question', 'route' => null],
             ],
         ],
