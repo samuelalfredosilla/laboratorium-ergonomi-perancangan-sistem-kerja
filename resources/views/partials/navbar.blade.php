@@ -51,7 +51,7 @@
             <a href="{{ route('achievement.index')}}" class="nav-link {{ request()->routeIs('achievement.*') ? 'active-link' : '' }}">ACHIEVEMENT</a>
 
             <!-- 6. LAYANAN LAB -->
-            <a href="#services" class="nav-link">LAB PROCEDURES</a>
+            <a href="{{ route('procedures.index') }}" class="nav-link {{ request()->routeIs('procedures.*') ? 'active-link' : '' }}">LAB PROCEDURES</a>
         </div>
 
         <!-- Mobile Button (Hamburger) -->
@@ -113,7 +113,7 @@
 
             <a href="{{ route('achievement.index') }}" class="sidebar-link {{ request()->routeIs('achievement.*') ? 'active' : '' }}">ACHIEVEMENT</a>
 
-            <a href="#services" class="sidebar-link">LAB PROCEDURES</a>
+            <a href="{{ route('procedures.index') }}" class="sidebar-link {{ request()->routeIs('procedures.*') ? 'active' : '' }}">LAB PROCEDURES</a>
         </div>
     </div>
 </nav>

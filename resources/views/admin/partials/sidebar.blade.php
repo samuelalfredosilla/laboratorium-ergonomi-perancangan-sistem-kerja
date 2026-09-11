@@ -44,7 +44,7 @@
         [
             'label' => 'Lab Procedures',
             'items' => [
-                ['label' => 'Lab Requests / Services', 'icon' => 'fa-clipboard-question', 'route' => null],
+                ['label' => 'Lab Requests / Services', 'icon' => 'fa-clipboard-question', 'route' => 'admin.procedures.index', 'active' => 'admin.procedures.*'],
             ],
         ],
         [

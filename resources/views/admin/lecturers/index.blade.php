@@ -303,11 +303,11 @@
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div class="sm:col-span-2">
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">Nama Lengkap &amp; Gelar *</label>
-                                <input type="text" name="name" x-model="form.name" required class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                <input type="text" name="name" x-model="form.name" required placeholder="Contoh: Dr. Ir. Budi Santoso, S.T., M.T." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                             </div>
                             <div>
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">NIP</label>
-                                <input type="text" name="nip" x-model="form.nip" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                <input type="text" name="nip" x-model="form.nip" placeholder="Contoh: 19800101 200501 1 001" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                             </div>
                             <div>
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">Peran *</label>
@@ -326,19 +326,19 @@
 
                             <div class="sm:col-span-2">
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">Keahlian Utama</label>
-                                <input type="text" name="expertise" x-model="form.expertise" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                <input type="text" name="expertise" x-model="form.expertise" placeholder="Contoh: Ergonomi Makro, K3" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">Email</label>
-                                <input type="email" name="email" x-model="form.email" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                <input type="email" name="email" x-model="form.email" placeholder="Contoh: dosen@trunojoyo.ac.id" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                             </div>
                             <div>
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">Google Scholar</label>
-                                <input type="url" name="scholar_link" x-model="form.scholar_link" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                <input type="url" name="scholar_link" x-model="form.scholar_link" placeholder="https://scholar.google.com/..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                             </div>
                             <div>
                                 <label class="mb-1.5 block text-xs font-semibold text-slate-600">LinkedIn</label>
-                                <input type="url" name="linkedin_link" x-model="form.linkedin_link" class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                <input type="url" name="linkedin_link" x-model="form.linkedin_link" placeholder="https://linkedin.com/in/..." class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                             </div>
                         </div>
                     </div>
@@ -360,11 +360,11 @@
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-[11px] font-semibold text-slate-500">Institusi</label>
-                                    <input type="text" x-model="edu.institution" :name="'educations[' + idx + '][institution]'" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                    <input type="text" x-model="edu.institution" :name="'educations[' + idx + '][institution]'" placeholder="Contoh: Institut Teknologi Sepuluh Nopember" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-[11px] font-semibold text-slate-500">Tahun</label>
-                                    <input type="text" x-model="edu.year_range" :name="'educations[' + idx + '][year_range]'" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                    <input type="text" x-model="edu.year_range" :name="'educations[' + idx + '][year_range]'" placeholder="Contoh: 2010 - 2014" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                                 </div>
                             </div>
                         </template>
@@ -382,11 +382,11 @@
                                 </button>
                                 <div class="sm:col-span-3">
                                     <label class="mb-1 block text-[11px] font-semibold text-slate-500">Judul Penelitian</label>
-                                    <textarea x-model="item.title" :name="'researches[' + idx + '][title]'" rows="2" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100"></textarea>
+                                    <textarea x-model="item.title" :name="'researches[' + idx + '][title]'" rows="2" placeholder="Contoh: Analisis Postur Kerja Berbasis RULA..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100"></textarea>
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-[11px] font-semibold text-slate-500">Tahun</label>
-                                    <input type="text" x-model="item.year" :name="'researches[' + idx + '][year]'" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                    <input type="text" x-model="item.year" :name="'researches[' + idx + '][year]'" placeholder="Contoh: 2023" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                                 </div>
                             </div>
                         </template>
@@ -404,11 +404,11 @@
                                 </button>
                                 <div class="sm:col-span-3">
                                     <label class="mb-1 block text-[11px] font-semibold text-slate-500">Judul Pengabdian</label>
-                                    <textarea x-model="item.title" :name="'services[' + idx + '][title]'" rows="2" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100"></textarea>
+                                    <textarea x-model="item.title" :name="'services[' + idx + '][title]'" rows="2" placeholder="Contoh: Sosialisasi Keselamatan Kerja di UKM Batik..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100"></textarea>
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-[11px] font-semibold text-slate-500">Tahun</label>
-                                    <input type="text" x-model="item.year" :name="'services[' + idx + '][year]'" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
+                                    <input type="text" x-model="item.year" :name="'services[' + idx + '][year]'" placeholder="Contoh: 2024" class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                                 </div>
                             </div>
                         </template>

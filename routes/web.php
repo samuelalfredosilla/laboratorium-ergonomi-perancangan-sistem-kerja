@@ -21,6 +21,8 @@ use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\Admin\EquipmentController;
 use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\Admin\AchievementController as AdminAchievementController;
+use App\Http\Controllers\ProcedureController;
+use App\Http\Controllers\Admin\LabProcedureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +63,9 @@ Route::get('/achievement/{id}', [AchievementController::class, 'show'])->name('a
 // Public News & Articles
 Route::get('/news', [PublicNewsController::class, 'index'])->name('news.index');
 Route::get('/news/{news:slug}', [PublicNewsController::class, 'show'])->name('news.show');
+
+// Lab Procedures Pages
+Route::get('/lab-procedures', [ProcedureController::class, 'index'])->name('procedures.index');
 
 /*
 |--------------------------------------------------------------------------
@@ -183,5 +188,19 @@ Route::prefix('admin')
             Route::put('/{achievement}', [AdminAchievementController::class, 'update'])->name('update');
             Route::delete('/{achievement}', [AdminAchievementController::class, 'destroy'])->name('destroy');
             Route::patch('/{achievement}/toggle', [AdminAchievementController::class, 'toggle'])->name('toggle');
+        });
+        // 10. Lab Procedures (ADMIN)
+        Route::prefix('lab-procedures')->name('procedures.')->group(function () {
+            Route::get('/', [LabProcedureController::class, 'index'])->name('index');
+            Route::post('/', [LabProcedureController::class, 'store'])->name('store');
+            Route::put('/{procedure}', [LabProcedureController::class, 'update'])->name('update');
+            Route::delete('/{procedure}', [LabProcedureController::class, 'destroy'])->name('destroy');
+        });
+
+        // 11. categories
+        Route::prefix('categories')->name('categories.')->group(function () {
+            Route::post('/', [CategoryController::class, 'store'])->name('store');
+            Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
+            Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
         });
     });

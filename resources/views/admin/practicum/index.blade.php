@@ -76,7 +76,7 @@
 
         <!-- Toolbar Filter Form -->
         <form method="GET" action="{{ route('admin.practicum.index') }}" class="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center lg:justify-between">
-            
+
             <!-- 1. Search Box -->
             <div class="relative w-full lg:max-w-xs">
                 <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
@@ -112,7 +112,7 @@
 
                 <!-- Tombol Reset Filter -->
                 @if (request()->hasAny(['search', 'place', 'sort']))
-                    <a href="{{ route('admin.practicum.index') }}" 
+                    <a href="{{ route('admin.practicum.index') }}"
                         class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-500 hover:border-red-200 hover:text-red-600 transition-colors">
                         <i class="fa-solid fa-rotate-left text-[11px]"></i> Reset
                     </a>
@@ -288,12 +288,14 @@
                     <div>
                         <label class="mb-1.5 block text-xs font-semibold text-slate-600">Judul Tugas / Topik Praktikum *</label>
                         <input type="text" name="title" x-model="form.title" required
+                            placeholder="Contoh: Modul 1 - Antropometri"
                             class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                     </div>
 
                     <div>
                         <label class="mb-1.5 block text-xs font-semibold text-slate-600">Deskripsi Singkat Penugasan *</label>
                         <textarea name="description" x-model="form.description" rows="4" required
+                            placeholder="Tuliskan instruksi atau deskripsi singkat mengenai penugasan ini..."
                             class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100"></textarea>
                     </div>
 
@@ -302,6 +304,7 @@
                         <div class="relative">
                             <i class="fa-brands fa-google-drive pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
                             <input type="url" name="gdrive_link" x-model="form.gdrive_link" required
+                                placeholder="https://drive.google.com/file/d/..."
                                 class="w-full rounded-lg border border-slate-200 py-2.5 pl-9 pr-3 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                         </div>
                     </div>
@@ -310,16 +313,19 @@
                         <div>
                             <label class="mb-1.5 block text-xs font-semibold text-slate-600">Hari / Tanggal Pengumpulan *</label>
                             <input type="text" name="collection_date" x-model="form.collection_date" required
+                                placeholder="Contoh: Senin, 14 Sept 2026"
                                 class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                         </div>
                         <div>
                             <label class="mb-1.5 block text-xs font-semibold text-slate-600">Waktu Pengumpulan *</label>
                             <input type="text" name="collection_time" x-model="form.collection_time" required
+                                placeholder="Contoh: 15:30 WIB"
                                 class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                         </div>
                         <div class="sm:col-span-2">
                             <label class="mb-1.5 block text-xs font-semibold text-slate-600">Tempat Pengumpulan *</label>
                             <input type="text" name="collection_place" x-model="form.collection_place" required
+                                placeholder="Contoh: Ruang Laboratorium EPSK"
                                 class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                         </div>
                     </div>
@@ -337,15 +343,15 @@
     </div>
 
     {{-- ============================= DELETE CONFIRMATION MODAL (FULL SCREEN) ============================= --}}
-    <div 
-        x-cloak 
-        x-show="deleteModalOpen" 
+    <div
+        x-cloak
+        x-show="deleteModalOpen"
         class="fixed inset-0 overflow-y-auto"
         style="z-index: 9999;"
         @keydown.escape.window="deleteModalOpen = false"
     >
         <!-- Backdrop Overlay Full Viewport -->
-        <div 
+        <div
             x-show="deleteModalOpen"
             x-transition:enter="transition-opacity ease-linear duration-300"
             x-transition:enter-start="opacity-0"
@@ -353,16 +359,16 @@
             x-transition:leave="transition-opacity ease-linear duration-200"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs" 
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
             @click="deleteModalOpen = false"
         ></div>
 
         <!-- Modal Box Wrapper di Tengah Layar Penuh -->
         <div class="fixed inset-0 z-10 flex min-h-full items-center justify-center p-4">
-            <div 
-                x-show="deleteModalOpen" 
-                x-transition:enter="transition ease-out duration-200" 
-                x-transition:enter-start="opacity-0 scale-95" 
+            <div
+                x-show="deleteModalOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
                 x-transition:enter-end="opacity-100 scale-100"
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 scale-100"
@@ -379,16 +385,16 @@
                 </p>
 
                 <div class="mt-6 flex items-center gap-3">
-                    <button 
-                        type="button" 
-                        @click="deleteModalOpen = false" 
+                    <button
+                        type="button"
+                        @click="deleteModalOpen = false"
                         class="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
                     >
                         Batal
                     </button>
-                    <button 
-                        type="button" 
-                        @click="submitDelete()" 
+                    <button
+                        type="button"
+                        @click="submitDelete()"
                         class="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white shadow-soft hover:bg-red-700 transition-colors cursor-pointer"
                     >
                         Ya, Hapus
