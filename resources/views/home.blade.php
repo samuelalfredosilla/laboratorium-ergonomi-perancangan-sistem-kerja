@@ -2,6 +2,10 @@
 
 @section('content')
 
+@php
+    $siteSetting = \App\Models\SiteSetting::first();
+@endphp
+
 <!-- ==========================================
      HERO SECTION WITH VIDEO BACKGROUND
 =========================================== -->
@@ -232,7 +236,7 @@
                             <div>
                                 <h4 class="contact-item-title">Address</h4>
                                 <p class="contact-item-text">
-                                    {{ $settings['contact_address'] ?? 'Perumahan Telang Indah, Bangkalan' }}
+                                    {{ $siteSetting->address ?? 'Perumahan Telang Indah, Bangkalan' }}
                                 </p>
                             </div>
                         </div>
@@ -243,27 +247,54 @@
                             </div>
                             <div>
                                 <h4 class="contact-item-title">Email</h4>
-                                <p class="contact-item-text">{{ $settings['contact_email'] ?? 'epsk.trunojoyo@gmail.com' }}</p>
+                                <p class="contact-item-text">
+                                    {{ $siteSetting->contact_email ?? 'epsk.trunojoyo@gmail.com' }}
+                                </p>
                             </div>
                         </div>
+                        
+                        @if($siteSetting && $siteSetting->contact_phone)
+                        <div class="contact-item">
+                            <div class="contact-icon-box">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <h4 class="contact-item-title">Phone / WhatsApp</h4>
+                                <p class="contact-item-text">
+                                    {{ $siteSetting->contact_phone }}
+                                </p>
+                            </div>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- Social Media Buttons -->
                     <div>
                         <h4 class="social-media-title">Follow Our Social Media</h4>
                         <div class="social-links">
-                            <a href="{{ $settings['social_linkedin'] ?? '#' }}" target="_blank" class="social-btn li">
+                            @if(!empty($siteSetting->linkedin_link))
+                            <a href="{{ $siteSetting->linkedin_link }}" target="_blank" class="social-btn li">
                                 <i class="fa-brands fa-linkedin-in"></i>
                             </a>
-                            <a href="{{ $settings['social_instagram'] ?? '#' }}" target="_blank" class="social-btn ig">
+                            @endif
+                            
+                            @if(!empty($siteSetting->instagram_link))
+                            <a href="{{ $siteSetting->instagram_link }}" target="_blank" class="social-btn ig">
                                 <i class="fa-brands fa-instagram"></i>
                             </a>
-                            <a href="{{ $settings['social_tiktok'] ?? '#' }}" target="_blank" class="social-btn tt">
+                            @endif
+                            
+                            @if(!empty($siteSetting->tiktok_link))
+                            <a href="{{ $siteSetting->tiktok_link }}" target="_blank" class="social-btn tt">
                                 <i class="fa-brands fa-tiktok"></i>
                             </a>
-                            <a href="{{ $settings['social_youtube'] ?? '#' }}" target="_blank" class="social-btn yt">
+                            @endif
+                            
+                            @if(!empty($siteSetting->youtube_link))
+                            <a href="{{ $siteSetting->youtube_link }}" target="_blank" class="social-btn yt">
                                 <i class="fa-brands fa-youtube"></i>
                             </a>
+                            @endif
                         </div>
                     </div>
                 </div>

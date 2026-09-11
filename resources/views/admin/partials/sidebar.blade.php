@@ -50,7 +50,7 @@
         [
             'label' => 'System',
             'items' => [
-                ['label' => 'Site Settings', 'icon' => 'fa-gear', 'route' => null],
+                ['label' => 'Site Settings', 'icon' => 'fa-gear', 'route' => 'admin.site-settings.index', 'active' => 'admin.site-settings.*'],
             ],
         ],
     ];

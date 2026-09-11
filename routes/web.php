@@ -23,6 +23,7 @@ use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\Admin\AchievementController as AdminAchievementController;
 use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\Admin\LabProcedureController;
+use App\Http\Controllers\Admin\SiteSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -202,5 +203,11 @@ Route::prefix('admin')
             Route::post('/', [CategoryController::class, 'store'])->name('store');
             Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
             Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
+        });
+
+        // 12. Site-settings
+        Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+            Route::get('/site-settings', [SiteSettingController::class, 'index'])->name('site-settings.index');
+            Route::put('/site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
         });
     });
