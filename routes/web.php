@@ -206,8 +206,8 @@ Route::prefix('admin')
         });
 
         // 12. Site-settings
-        Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-            Route::get('/site-settings', [SiteSettingController::class, 'index'])->name('site-settings.index');
-            Route::put('/site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
+        Route::prefix('site-settings')->name('site-settings.')->group(function () {
+            Route::get('/', [SiteSettingController::class, 'index'])->name('index');
+            Route::put('/', [SiteSettingController::class, 'update'])->name('update');
         });
     });
