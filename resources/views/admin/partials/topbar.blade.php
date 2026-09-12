@@ -207,8 +207,9 @@
                     <p class="truncate text-sm font-semibold text-slate-700">{{ auth()->user()->name }}</p>
                     <p class="truncate text-xs text-slate-400">{{ '@' . auth()->user()->username }}</p>
                 </div>
-                <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
-                    <i class="fa-solid fa-user w-4 text-slate-400"></i> Edit Profil
+                <a href="{{ route('admin.profile.edit') }}" 
+                class="block px-4 py-2 text-sm transition-colors {{ request()->routeIs('admin.profile.edit') ? 'bg-maroon-50 text-maroon-700 font-semibold' : 'text-slate-700 hover:bg-slate-50 hover:text-maroon-600' }}">
+                    <i class="fa-solid fa-user mr-2 {{ request()->routeIs('admin.profile.edit') ? 'text-maroon-700' : 'text-slate-400' }}"></i> Edit Profil
                 </a>
                 <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
                     <i class="fa-solid fa-gear w-4 text-slate-400"></i> Pengaturan

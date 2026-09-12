@@ -210,4 +210,10 @@ Route::prefix('admin')
             Route::get('/', [SiteSettingController::class, 'index'])->name('index');
             Route::put('/', [SiteSettingController::class, 'update'])->name('update');
         });
+
+        // 13. edit profile
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('edit');
+            Route::put('/', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('update');
+        });
     });
