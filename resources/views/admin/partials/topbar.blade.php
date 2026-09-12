@@ -211,9 +211,9 @@
                 class="block px-4 py-2 text-sm transition-colors {{ request()->routeIs('admin.profile.edit') ? 'bg-maroon-50 text-maroon-700 font-semibold' : 'text-slate-700 hover:bg-slate-50 hover:text-maroon-600' }}">
                     <i class="fa-solid fa-user mr-2 {{ request()->routeIs('admin.profile.edit') ? 'text-maroon-700' : 'text-slate-400' }}"></i> Edit Profil
                 </a>
-                <form method="POST" action="{{ route('logout') }}" class="border-t border-slate-100">
+                <form id="logout-form" method="POST" action="{{ route('logout') }}" class="border-t border-slate-100">
                     @csrf
-                    <button type="submit" class="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                    <button type="button" onclick="confirmLogout()" class="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer">
                         <i class="fa-solid fa-right-from-bracket w-4"></i> Logout
                     </button>
                 </form>
@@ -221,3 +221,11 @@
         </div>
     </div>
 </header>
+
+<script>
+    function confirmLogout() {
+        if (confirm('Apakah Anda yakin ingin keluar dari panel admin?')) {
+            document.getElementById('logout-form').submit();
+        }
+    }
+</script>
