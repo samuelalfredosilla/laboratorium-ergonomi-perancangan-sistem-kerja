@@ -78,12 +78,6 @@
                         </button>
                     </div>
                 </div>
-                <div class="flex items-center justify-between">
-                    <label class="flex items-center gap-2 text-xs text-slate-500">
-                        <input type="checkbox" name="remember" value="1" class="rounded border-slate-300 text-maroon-600 focus:ring-maroon-400">
-                        Ingat saya
-                    </label>
-                </div>
                 <button type="submit" class="w-full rounded-lg bg-maroon-600 px-4 py-2.5 text-sm font-semibold text-white shadow-soft hover:bg-maroon-700">
                     Masuk
                 </button>
