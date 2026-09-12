@@ -96,10 +96,12 @@
 =========================================== -->
 <section id="about" class="about-section">
     <div class="about-container">
-        <div class="about-grid">
+        <!-- Tambahkan items-center di sini agar sejajar di tengah secara vertikal -->
+        <div class="about-grid items-center">
 
             <!-- Left Side: Content Card -->
-            <div class="about-card">
+            <!-- Tambahkan scroll-mt-24 di sini agar posisi scroll tidak tertutup navbar -->
+            <div id="about-section" class="about-card scroll-mt-24">
                 <div>
                     <!-- Badge Accent Baru -->
                     <span class="about-badge">ABOUT OUR LABORATORY</span>
