@@ -163,9 +163,17 @@
             <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-soft">
                 <div class="flex items-center justify-between">
                     <h2 class="text-sm font-bold text-slate-700">Status &amp; Kontak</h2>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-600">
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Online
-                    </span>
+                    
+                    <!-- Indikator Dinamis -->
+                    @if(strtolower($contact['status']) === 'online')
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-600">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Online
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-semibold text-rose-600">
+                            <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span> Offline
+                        </span>
+                    @endif
                 </div>
                 <ul class="mt-4 space-y-3 text-sm text-slate-600">
                     <li class="flex items-start gap-2.5">
@@ -181,7 +189,8 @@
                         <span>{{ $contact['phone'] }}</span>
                     </li>
                 </ul>
-                <a href="#" class="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-maroon-600 hover:underline">
+                <!-- Tautan Dinamis -->
+                <a href="{{ route('admin.site-settings.index') }}" class="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold text-maroon-600 hover:underline">
                     Kelola Pengaturan <i class="fa-solid fa-arrow-right text-[10px]"></i>
                 </a>
             </div>

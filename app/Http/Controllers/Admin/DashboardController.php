@@ -10,6 +10,7 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use App\Models\SiteSetting;
 
 class DashboardController extends Controller
 {
@@ -88,16 +89,14 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 6. Settings Sanitization (Mencegah Stored XSS dari baris DB)
-        $settings = [];
-        if (Schema::hasTable('settings')) {
-            $settings = DB::table('settings')->pluck('value', 'key')->toArray();
-        }
+        // 6. Ambil data dari model SiteSetting yang konsisten
+        $setting = SiteSetting::first();
 
         $contact = [
-            'address' => isset($settings['contact_address']) ? strip_tags($settings['contact_address']) : '—',
-            'email'   => isset($settings['contact_email']) ? filter_var($settings['contact_email'], FILTER_SANITIZE_EMAIL) : '—',
-            'phone'   => isset($settings['contact_phone']) ? strip_tags($settings['contact_phone']) : 'Belum diatur',
+            'address' => $setting && $setting->address ? strip_tags($setting->address) : '—',
+            'email'   => $setting && $setting->contact_email ? filter_var($setting->contact_email, FILTER_SANITIZE_EMAIL) : '—',
+            'phone'   => $setting && $setting->contact_phone ? strip_tags($setting->contact_phone) : 'Belum diatur',
+            'status'  => $setting && isset($setting->lab_status) ? strip_tags($setting->lab_status) : 'online',
         ];
 
         return view('admin.dashboard', compact('stats', 'latestNews', 'contact'));
