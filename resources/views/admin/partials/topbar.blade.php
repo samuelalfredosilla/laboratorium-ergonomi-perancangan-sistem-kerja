@@ -211,9 +211,6 @@
                 class="block px-4 py-2 text-sm transition-colors {{ request()->routeIs('admin.profile.edit') ? 'bg-maroon-50 text-maroon-700 font-semibold' : 'text-slate-700 hover:bg-slate-50 hover:text-maroon-600' }}">
                     <i class="fa-solid fa-user mr-2 {{ request()->routeIs('admin.profile.edit') ? 'text-maroon-700' : 'text-slate-400' }}"></i> Edit Profil
                 </a>
-                <a href="#" class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-600 hover:bg-maroon-50 hover:text-maroon-600">
-                    <i class="fa-solid fa-gear w-4 text-slate-400"></i> Pengaturan
-                </a>
                 <form method="POST" action="{{ route('logout') }}" class="border-t border-slate-100">
                     @csrf
                     <button type="submit" class="flex w-full items-center gap-2.5 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
