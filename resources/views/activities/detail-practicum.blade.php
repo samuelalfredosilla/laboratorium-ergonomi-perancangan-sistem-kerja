@@ -162,7 +162,7 @@
         border-color: #ffe4e6;
     }
     .rule-icon {
-        width: 42px; 
+        width: 42px;
         height: 42px;
         border-radius: 10px;
         background: #f1f5f9;
@@ -284,12 +284,12 @@
 
             <!-- 3. Tautan Berkas Soal -->
             <div class="content-section">
-                <h3 class="section-heading"><i class="fa-solid fa-cloud-arrow-down text-maroon"></i> Berkas Soal & Template</h3>
-                <p class="text-slate-500 mb-3" style="font-size: 0.95rem;">Unduh template dan lembar soal tugas melalui direktori Google Drive resmi berikut:</p>
+                <h3 class="section-heading"><i class="fa-solid fa-cloud-arrow-down text-maroon"></i> Berkas Praktikum</h3>
+                <p class="text-slate-500 mb-3" style="font-size: 0.95rem;">Unduh berkas melalui direktori Google Drive resmi berikut:</p>
 
                 @if($task->gdrive_link)
                     <a href="{{ $task->gdrive_link }}" target="_blank" rel="noopener noreferrer" class="btn-gdrive-action">
-                        <i class="fa-brands fa-google-drive"></i> Unduh Berkas Soal
+                        <i class="fa-brands fa-google-drive"></i> Unduh Berkas
                     </a>
                 @else
                     <div class="alert alert-light border text-slate-500 d-inline-flex align-items-center gap-2" style="font-size: 0.85rem; border-radius: 8px;">
