@@ -1,5 +1,6 @@
 @extends('layouts.app')
-
+@section('title', $news->title . ' - Berita Lab EPSK UTM')
+@section('meta_description', Str::limit(strip_tags($news->content), 150))
 @section('content')
 <div class="overview-page-wrapper">
 

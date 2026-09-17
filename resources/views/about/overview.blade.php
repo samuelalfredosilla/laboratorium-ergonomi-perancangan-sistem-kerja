@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
+@section('title', 'Visi & Misi Laboratorium - Lab EPSK UTM')
+@section('meta_description', 'Landasan utama, arah strategis, visi, dan misi Laboratorium Ergonomi dan Perancangan Sistem Kerja (EPSK) Universitas Trunojoyo Madura.')
+
 @section('content')
 <style>
     /* ========================================================================= */
     /* LAYOUT UTAMA & HEADER BERSAMA */
     /* ========================================================================= */
     body, .overview-page-wrapper {
-        background-color: #f8fafc; 
+        background-color: #f8fafc;
         min-height: 100vh;
     }
     .overview-hero-header {
@@ -43,14 +46,14 @@
     /* ========================================================================= */
     .section-header-box {
         display: flex;
-        align-items: center; 
+        align-items: center;
         gap: 1.25rem;
         margin-bottom: 2.5rem;
         padding-bottom: 1.5rem;
         border-bottom: 1px solid #e2e8f0;
     }
     .section-icon {
-        width: 56px; 
+        width: 56px;
         height: 56px;
         border-radius: 1rem;
         background: #fff1f2;
@@ -86,11 +89,11 @@
     @media(min-width: 768px) {
         .card-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    
+
     .content-box {
         background-color: #ffffff;
-        border: 1px solid #e2e8f0; 
-        border-radius: 1rem; 
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
         padding: 1.75rem;
         display: flex;
         flex-direction: column;
@@ -147,7 +150,7 @@
     <!-- Main Container menggunakan struktur achievement-container presisi -->
     <div class="achievement-container">
         <div class="achievement-card-main">
-            
+
             <!-- Header Visi & Misi -->
             <div class="section-header-box">
                 <div class="section-icon">
@@ -192,7 +195,7 @@
                     </ul>
                 </div>
             </div>
-            
+
         </div>
     </div>
 </div>

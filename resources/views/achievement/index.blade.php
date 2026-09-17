@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Prestasi & Penghargaan Asisten - Lab EPSK UTM')
+@section('meta_description', 'Rekam jejak pencapaian, karya, dan penghargaan gemilang yang diraih oleh asisten laboratorium (EPSIKERS) Laboratorium EPSK UTM.')
+
 @section('content')
 <style>
     /* ========================================================================= */
@@ -109,7 +112,7 @@
         flex-direction: column;
         flex-grow: 1;
     }
-    
+
     .achievement-badge {
         align-self: flex-start;
         font-size: 0.75rem;
@@ -213,7 +216,7 @@
     <!-- Main Container -->
     <div class="achievement-container">
         <div class="achievement-card-main">
-            
+
             <div class="section-header-box">
                 <div class="section-icon">
                     <i class="fa-solid fa-trophy"></i>
@@ -227,7 +230,7 @@
             <div class="achievement-list">
                 @forelse($achievements as $item)
                     <div class="achievement-item">
-                        
+
                         <!-- SEBELAH KIRI: FOTO -->
                         <div class="achievement-image-box">
                             @if($item->photo)

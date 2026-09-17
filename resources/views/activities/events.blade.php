@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Daftar Kegiatan & Acara - Lab EPSK UTM')
+@section('meta_description', 'Jadwal agenda, workshop, dan kegiatan laboratorium resmi dari Laboratorium EPSK UTM.')
+
 @section('content')
 <style>
     /* ========================================================================= */

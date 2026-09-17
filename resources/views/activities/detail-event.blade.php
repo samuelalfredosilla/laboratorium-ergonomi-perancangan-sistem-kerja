@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', $event->title . ' - Agenda Lab EPSK UTM')
+@section('meta_description', Str::limit(strip_tags($event->description), 150))
+
 @section('content')
 <style>
     /* =========================================

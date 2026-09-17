@@ -1,19 +1,22 @@
 @extends('layouts.app')
 
+@section('title', 'Asisten Laboratorium (EPSIKERS) - Lab EPSK UTM')
+@section('meta_description', 'Profil dan daftar generasi asisten Laboratorium Ergonomi dan Perancangan Sistem Kerja (EPSIKERS) Universitas Trunojoyo Madura.')
+
 @section('content')
 <style>
     /* ========================================================================= */
     /* LAYOUT UTAMA & HERO BANNER */
     /* ========================================================================= */
     body, .overview-page-wrapper {
-        background-color: #f8fafc; 
+        background-color: #f8fafc;
         min-height: 100vh;
     }
     .overview-hero-header {
         background-image: linear-gradient(to right, rgba(107, 28, 28, 0.95) 10%, rgba(26, 26, 26, 0.8)), url('{{ asset('images/2.jpeg') }}');
         background-size: cover;
         background-position: center;
-        padding: 5rem 0 9rem 0; 
+        padding: 5rem 0 9rem 0;
         text-align: center;
     }
     .overview-main-title {
@@ -54,14 +57,14 @@
     /* ========================================================================= */
     .section-header-box {
         display: flex;
-        align-items: center; 
+        align-items: center;
         gap: 1.25rem;
         margin-bottom: 2.5rem;
         padding-bottom: 1.5rem;
         border-bottom: 1px solid #e2e8f0;
     }
     .section-icon {
-        width: 56px; 
+        width: 56px;
         height: 56px;
         border-radius: 1rem;
         background: #fff1f2;
@@ -100,7 +103,7 @@
     <!-- Main Content Container dengan Struktur Achievement -->
     <div class="achievement-container">
         <div class="achievement-card-main">
-            
+
             <!-- Header Section -->
             <div class="section-header-box">
                 <div class="section-icon">

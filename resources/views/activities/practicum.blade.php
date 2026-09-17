@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Daftar Tugas Praktikum - Lab EPSK UTM')
+@section('meta_description', 'Kumpulan rilis tugas praktikum, jadwal pengumpulan, dan berkas soal resmi dari Laboratorium EPSK UTM.')
+
 @section('content')
 <style>
     /* ========================================================================= */
@@ -163,7 +166,7 @@
             <div class="task-grid">
                 @forelse($tasks as $task)
                     <div class="task-card">
-                        
+
                         <h3 class="task-title">{{ $task->title }}</h3>
 
                         <!-- Ringkasan Deskripsi Singkat -->

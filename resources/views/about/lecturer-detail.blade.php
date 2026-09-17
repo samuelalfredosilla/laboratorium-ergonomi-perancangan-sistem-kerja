@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', $lecturer->name . ' - Profil Dosen Lab EPSK UTM')
+@section('meta_description', 'Profil lengkap, bidang keahlian, riwayat pendidikan, dan rekam jejak riset ' . $lecturer->name . ' di Laboratorium EPSK Universitas Trunojoyo Madura.')
+
 @section('content')
 <style>
     /* ========================================================================= */

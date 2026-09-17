@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Prosedur & Ketentuan Layanan - Lab EPSK UTM')
+@section('meta_description', 'Panduan resmi alur peminjaman alat, tata tertib praktikum, dan pengembalian fasilitas Laboratorium Ergonomi dan Perancangan Sistem Kerja UTM.')
+
 @section('content')
 <style>
     /* ========================================================================= */
@@ -157,7 +160,7 @@
     <!-- Main Container -->
     <div class="achievement-container">
         <div class="achievement-card-main">
-            
+
             <!-- Section Header Box -->
             <div class="section-header-box">
                 <div class="section-icon">
@@ -177,11 +180,11 @@
                             <div class="procedure-number">{{ $item->sort_order }}</div>
                             <div class="procedure-body">
                                 <h3 class="procedure-title">{{ $item->title }}</h3>
-                                
+
                                 @if($item->description)
                                     <p class="procedure-desc">{{ $item->description }}</p>
                                 @endif
-                                
+
                                 @if($item->file_url)
                                     <a href="{{ $item->file_url }}" target="_blank" rel="noopener noreferrer" class="btn-download-doc">
                                         <i class="fa-solid fa-eye"></i> Lihat Dokumen Prosedur

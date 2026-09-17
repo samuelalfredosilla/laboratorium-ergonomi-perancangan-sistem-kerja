@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+<!-- Injeksi SEO Khusus untuk Halaman Tugas Ini -->
+@section('title', $task->title . ' - Praktikum EPSK UTM')
+@section('meta_description', Str::limit(strip_tags($task->description), 150))
+
 @section('content')
 <style>
     /* =========================================

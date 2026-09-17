@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Daftar Peralatan & Fasilitas - Lab EPSK UTM')
+@section('meta_description', 'Katalog inventaris alat dan fasilitas riset ergonomi resmi yang tersedia di Laboratorium EPSK Universitas Trunojoyo Madura.')
+
 @section('content')
 <style>
     /* ========================================================================= */
@@ -113,7 +116,7 @@
         border-color: #cbd5e1;
         background: #ffffff;
     }
-    
+
     .equipment-image-wrapper {
         width: 100%;
         height: 220px;
@@ -184,8 +187,8 @@
 
             <!-- Pengelompokan Berdasarkan Kategori (Tanpa Filter Kategori di Atas) -->
             @forelse($categories as $category)
-                @php 
-                    $itemsInCat = $equipments->get($category->name); 
+                @php
+                    $itemsInCat = $equipments->get($category->name);
                 @endphp
 
                 @if($itemsInCat && $itemsInCat->isNotEmpty())
@@ -207,13 +210,13 @@
                                             <i class="fa-solid fa-image equipment-image-placeholder"></i>
                                         @endif
                                     </div>
-                                    
+
                                     <h3 class="equipment-title">{{ $item->name }}</h3>
-                                    
+
                                     @if($item->specification)
                                         <div class="equipment-spec">{{ $item->specification }}</div>
                                     @endif
-                                    
+
                                     <p class="equipment-desc">
                                         {{ $item->description ?: 'Belum ada deskripsi untuk peralatan ini.' }}
                                     </p>

@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Laboratorium Ergonomi & Perancangan Sistem Kerja - Lab EPSK UTM')
+@section('meta_description', 'Portal resmi Laboratorium EPSK Teknik Industri UTM. Pusat praktikum ergonomi, riset perancangan sistem kerja, dan layanan kolaborasi industri.')
+
 @section('content')
 
 @php
@@ -254,7 +257,7 @@
                                 </p>
                             </div>
                         </div>
-                        
+
                         @if($siteSetting && $siteSetting->contact_phone)
                         <div class="contact-item">
                             <div class="contact-icon-box">
@@ -279,19 +282,19 @@
                                 <i class="fa-brands fa-linkedin-in"></i>
                             </a>
                             @endif
-                            
+
                             @if(!empty($siteSetting->instagram_link))
                             <a href="{{ $siteSetting->instagram_link }}" target="_blank" class="social-btn ig">
                                 <i class="fa-brands fa-instagram"></i>
                             </a>
                             @endif
-                            
+
                             @if(!empty($siteSetting->tiktok_link))
                             <a href="{{ $siteSetting->tiktok_link }}" target="_blank" class="social-btn tt">
                                 <i class="fa-brands fa-tiktok"></i>
                             </a>
                             @endif
-                            
+
                             @if(!empty($siteSetting->youtube_link))
                             <a href="{{ $siteSetting->youtube_link }}" target="_blank" class="social-btn yt">
                                 <i class="fa-brands fa-youtube"></i>

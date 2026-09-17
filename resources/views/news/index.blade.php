@@ -1,5 +1,6 @@
 @extends('layouts.app')
-
+@section('title', 'Berita & Artikel Terbaru - Lab EPSK UTM')
+@section('meta_description', 'Kumpulan informasi, pengumuman, artikel riset, dan wawasan seputar kegiatan Laboratorium Ergonomi dan Perancangan Sistem Kerja UTM.')
 @section('content')
 <div class="overview-page-wrapper">
 

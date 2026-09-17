@@ -3,7 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EPSK Laboratory</title>
+
+    <!-- Dynamic Title & SEO Dasar -->
+    <title>@yield('title', 'EPSK Laboratory - Universitas Trunojoyo Madura')</title>
+    <meta name="description" content="@yield('meta_description', 'Portal resmi Laboratorium Ergonomi dan Perancangan Sistem Kerja (EPSK) Universitas Trunojoyo Madura. Informasi praktikum, fasilitas, dan riset ergonomi.')">
+    <meta name="keywords" content="@yield('meta_keywords', 'Lab EPSK, Ergonomi UTM, Teknik Industri UTM, Praktikum Ergonomi, Lab EPSK UTM')">
+    <meta name="author" content="Laboratorium EPSK UTM">
+
+    <!-- Canonical URL (Mencegah duplikasi konten di mata Google) -->
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph (Agar rapi saat link web di-share ke WhatsApp/Sosmed) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'EPSK Laboratory - Universitas Trunojoyo Madura')">
+    <meta property="og:description" content="@yield('meta_description', 'Portal resmi Laboratorium Ergonomi dan Perancangan Sistem Kerja (EPSK) Universitas Trunojoyo Madura.')">
+    <meta property="og:image" content="@yield('meta_image', asset('images/Logo.png'))">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -37,5 +53,23 @@
     @include('partials.footer')
 
     <script src="{{ asset('js/app.js') }}"></script>
+    <!-- Schema.org JSON-LD untuk Identitas Institusi -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "Laboratorium EPSK Universitas Trunojoyo Madura",
+      "alternateName": "Lab EPSK UTM",
+      "url": "{{ url('/') }}",
+      "logo": "{{ asset('images/Logo.png') }}",
+      "description": "Portal resmi Laboratorium Ergonomi dan Perancangan Sistem Kerja (EPSK) Teknik Industri UTM.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Bangkalan",
+        "addressRegion": "Jawa Timur",
+        "addressCountry": "ID"
+      }
+    }
+    </script>
 </body>
 </html>

@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', $achievement->title . ' - Prestasi Lab EPSK UTM')
+@section('meta_description', 'Detail pencapaian ' . $achievement->title . ' yang diraih oleh ' . $achievement->recipient . ' di Laboratorium EPSK Universitas Trunojoyo Madura.')
+
 @section('content')
 <style>
     /* =========================================
@@ -164,7 +167,7 @@
         line-height: 1.8;
         font-size: 1.05rem;
     }
-    
+
     /* Styling tambahan agar output dari Quill Editor terlihat rapi */
     .section-text p { margin-bottom: 1rem; }
     .section-text ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }

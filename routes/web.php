@@ -24,12 +24,16 @@ use App\Http\Controllers\Admin\AchievementController as AdminAchievementControll
 use App\Http\Controllers\ProcedureController;
 use App\Http\Controllers\Admin\LabProcedureController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\SitemapController;
 
 /*
 |--------------------------------------------------------------------------
 | 1. PUBLIC / FRONTEND ROUTES
 |--------------------------------------------------------------------------
 */
+
+// sitemap
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 
 // Home Page
 Route::get('/', [HomeController::class, 'index'])->name('home');

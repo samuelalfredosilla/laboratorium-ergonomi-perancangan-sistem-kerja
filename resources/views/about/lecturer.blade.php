@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Daftar Dosen Pengampu & Peneliti - Lab EPSK UTM')
+@section('meta_description', 'Profil tim dosen ahli dan peneliti di bidang Ergonomi dan Perancangan Sistem Kerja Laboratorium EPSK Universitas Trunojoyo Madura.')
+
 @section('content')
 <style>
     /* ========================================================================= */
