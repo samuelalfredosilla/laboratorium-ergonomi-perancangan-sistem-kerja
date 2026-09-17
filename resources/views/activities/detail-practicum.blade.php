@@ -303,6 +303,7 @@
                 <h3 class="section-heading"><i class="fa-solid fa-list-check text-maroon"></i> Ketentuan & Format Pengerjaan</h3>
 
                 <div class="rules-grid">
+                    <!-- HARDCODED: WAJIB ADA (Bebas Plagiarisme) -->
                     <div class="rule-item warning">
                         <div class="rule-icon"><i class="fa-solid fa-ban"></i></div>
                         <div>
@@ -311,29 +312,18 @@
                         </div>
                     </div>
 
-                    <div class="rule-item">
-                        <div class="rule-icon"><i class="fa-solid fa-pen-nib"></i></div>
-                        <div>
-                            <div class="rule-title">Tulis Tangan & Tinta</div>
-                            <p class="rule-desc">Wajib tulis tangan secara rapi menggunakan <strong>pulpen biru</strong>.</p>
+                    <!-- DINAMIS: LOOPING DARI DATABASE -->
+                    @if($task->rules)
+                        @foreach($task->rules as $rule)
+                        <div class="rule-item">
+                            <div class="rule-icon"><i class="{{ $rule->icon }}"></i></div>
+                            <div>
+                                <div class="rule-title">{{ $rule->title }}</div>
+                                <p class="rule-desc">{{ $rule->description }}</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="rule-item">
-                        <div class="rule-icon"><i class="fa-solid fa-file-lines"></i></div>
-                        <div>
-                            <div class="rule-title">Kertas & Margin</div>
-                            <p class="rule-desc">Kertas <strong>A4 berkop resmi EPSK</strong> dengan format margin <strong>4-3-3-3</strong>.</p>
-                        </div>
-                    </div>
-
-                    <div class="rule-item">
-                        <div class="rule-icon"><i class="fa-solid fa-eraser"></i></div>
-                        <div>
-                            <div class="rule-title">Standar Kerapian</div>
-                            <p class="rule-desc">Penggunaan correction pen (tipe-x) <strong>maksimal 3 kali</strong> di seluruh lembar pengerjaan.</p>
-                        </div>
-                    </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
 

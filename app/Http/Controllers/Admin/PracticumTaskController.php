@@ -29,6 +29,7 @@ class PracticumTaskController extends Controller
             ->pluck('collection_place');
 
         $tasks = PracticumTask::query()
+            ->with('rules') // <-- KUNCI: Tambahkan Eager Loading ini di sini
             // 1. Filter Pencarian Teks
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
@@ -69,11 +70,22 @@ class PracticumTaskController extends Controller
 
     public function store(Request $request)
     {
+        // Pastikan validasi Anda juga mengizinkan array 'rules' lolos (jika ada FormRequest)
         $data = $this->validatedFields($request);
         $data['uploaded_at'] = now();
 
-        $task = DB::transaction(function () use ($data) {
-            return PracticumTask::create($data);
+        $task = DB::transaction(function () use ($data, $request) {
+            // Hapus array 'rules' dari $data utama agar tidak error "column not found" di tabel practicum_tasks
+            $taskData = \Illuminate\Support\Arr::except($data, ['rules']);
+
+            $task = PracticumTask::create($taskData);
+
+            // Jika ada input rules dinamis, simpan ke tabel relasi practicum_task_rules
+            if ($request->has('rules') && is_array($request->rules)) {
+                $task->rules()->createMany($request->rules);
+            }
+
+            return $task;
         });
 
         // 1. Notifikasi untuk ikon lonceng navbar atas
@@ -84,7 +96,7 @@ class PracticumTaskController extends Controller
             'attributes' => $task->toArray(),
         ]);
 
-        // 3. Return dengan flash session 'success' agar memicu Toast Popup "Berhasil"
+        // 3. Return dengan flash session
         return redirect()->route('admin.practicum.index')
             ->with('success', 'Tugas praktikum "' . $task->title . '" berhasil ditambahkan.');
     }
@@ -93,19 +105,30 @@ class PracticumTaskController extends Controller
     {
         $data = $this->validatedFields($request);
 
-        // 1. Ambil nilai asli sebelum diupdate
-        $oldValues = $practicum->only(array_keys($data));
+        // Pisahkan 'rules' dari data utama agar tabel practicum_tasks tidak error
+        $taskData = \Illuminate\Support\Arr::except($data, ['rules']);
+        $rulesData = $request->input('rules', []);
 
-        // 2. Jalankan update di database
-        DB::transaction(function () use ($practicum, $data) {
-            $practicum->update($data);
+        // 1. Ambil nilai asli sebelum diupdate (hanya dari $taskData)
+        $oldValues = $practicum->only(array_keys($taskData));
+
+        // 2. Jalankan update di database (Data utama + Rules)
+        DB::transaction(function () use ($practicum, $taskData, $rulesData, $request) {
+            // Update tabel utama
+            $practicum->update($taskData);
+
+            // KUNCI: Hapus aturan lama, lalu buat ulang jika ada input baru
+            $practicum->rules()->delete();
+            if ($request->has('rules') && is_array($rulesData)) {
+                $practicum->rules()->createMany($rulesData);
+            }
         });
 
         // 3. Bandingkan kolom yang mengalami perubahan nyata
         $changes = [];
         $oldChanges = [];
 
-        foreach ($data as $key => $newValue) {
+        foreach ($taskData as $key => $newValue) {
             $oldValue = $oldValues[$key] ?? null;
             if ((string) $oldValue !== (string) $newValue) {
                 $changes[$key] = $newValue;
@@ -113,13 +136,17 @@ class PracticumTaskController extends Controller
             }
         }
 
+        // Cek apakah ada perubahan pada ketentuan (rules)
+        $rulesChanged = $request->has('rules');
+
         Notification::log('Data tugas praktikum "' . $practicum->title . '" diperbarui.', 'fa-clipboard-check', 'maroon', route('admin.practicum.index'));
 
-        // 4. Catat riwayat log jika ada field yang diubah
-        if (! empty($changes)) {
+        // 4. Catat riwayat log jika ada field utama yang diubah ATAU ketentuan diubah
+        if (! empty($changes) || $rulesChanged) {
             ActivityLog::record($practicum, 'updated', 'Memperbarui data tugas praktikum: ' . $practicum->title, [
                 'old' => $oldChanges,
                 'new' => $changes,
+                'rules_updated' => $rulesChanged // Tambahkan flag untuk log
             ]);
         }
 

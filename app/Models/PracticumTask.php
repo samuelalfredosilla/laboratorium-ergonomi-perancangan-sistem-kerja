@@ -30,4 +30,8 @@ class PracticumTask extends Model
     {
         return $this->morphMany(\App\Models\ActivityLog::class, 'subject')->latest();
     }
+
+    public function rules() {
+        return $this->hasMany(PracticumTaskRule::class);
+    }
 }

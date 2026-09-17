@@ -16,7 +16,8 @@
             gdrive_link: '',
             collection_date: '',
             collection_time: '',
-            collection_place: 'Ruang Laboratorium EPSK'
+            collection_place: 'Ruang Laboratorium EPSK',
+            rules: []
         },
         resetForm() {
             this.form = {
@@ -25,7 +26,8 @@
                 gdrive_link: '',
                 collection_date: '',
                 collection_time: '',
-                collection_place: 'Ruang Laboratorium EPSK'
+                collection_place: 'Ruang Laboratorium EPSK',
+                rules: []
             };
         },
         openCreate() {
@@ -41,7 +43,8 @@
                 gdrive_link: task.gdrive_link,
                 collection_date: task.collection_date,
                 collection_time: task.collection_time,
-                collection_place: task.collection_place || 'Ruang Laboratorium EPSK'
+                collection_place: task.collection_place || 'Ruang Laboratorium EPSK',
+                rules: task.rules || []
             };
             this.panelMode = 'edit';
             this.editId = task.id;
@@ -56,6 +59,12 @@
         },
         submitDelete() {
             document.getElementById('delete-form-' + this.deleteTarget.id).submit();
+        },
+        addRule() {
+            this.form.rules.push({ icon: 'fa-solid fa-file-lines', title: '', description: '' });
+        },
+        removeRule(index) {
+            this.form.rules.splice(index, 1);
         }
     }"
     class="space-y-6"
@@ -328,6 +337,82 @@
                                 placeholder="Contoh: Ruang Laboratorium EPSK"
                                 class="w-full rounded-lg border border-slate-200 px-3.5 py-2.5 text-sm focus:border-maroon-400 focus:outline-none focus:ring-2 focus:ring-maroon-100">
                         </div>
+
+                        <!-- Ketentuan Dinamis Section -->
+                        <div class="sm:col-span-2 pt-4 border-t border-slate-100">
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="text-xs font-semibold text-slate-600">Ketentuan & Format Pengerjaan Tambahan</label>
+                                <button type="button" @click="addRule()" class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-200 transition-colors">
+                                    <i class="fa-solid fa-plus"></i> Tambah Ketentuan
+                                </button>
+                            </div>
+
+                            <!-- Looping Input Dinamis -->
+                            <div class="space-y-3">
+                                <template x-for="(rule, index) in form.rules" :key="index">
+                                    <div class="flex items-start gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 relative">
+                                        <!-- Custom Select Icon (Pengganti Select Biasa) -->
+                                        <div class="w-20 sm:w-24 flex-shrink-0 relative" x-data="{
+                                            dropdownOpen: false,
+                                            iconList: [
+                                                { val: 'fa-solid fa-file-lines', label: 'Kertas' },
+                                                { val: 'fa-solid fa-pen-nib', label: 'Pena' },
+                                                { val: 'fa-solid fa-eraser', label: 'Penghapus' },
+                                                { val: 'fa-solid fa-clock', label: 'Waktu' },
+                                                { val: 'fa-solid fa-calculator', label: 'Hitungan' },
+                                                { val: 'fa-solid fa-ban', label: 'Dilarang' },
+                                                { val: 'fa-solid fa-triangle-exclamation', label: 'Peringatan' }
+                                            ]
+                                        }">
+                                            <!-- Input hidden untuk mengirim data ke controller -->
+                                            <input type="hidden" x-model="rule.icon" :name="`rules[${index}][icon]`">
+
+                                            <!-- Tombol Dropdown (Hanya Menampilkan Ikon) -->
+                                            <button type="button" @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false"
+                                                class="w-full flex h-full min-h-[38px] items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-2 py-2 text-slate-600 hover:bg-slate-50 focus:border-maroon-400 focus:outline-none focus:ring-1 focus:ring-maroon-100 transition-colors">
+                                                <i :class="rule.icon" class="text-lg text-maroon-600"></i>
+                                                <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                                            </button>
+
+                                            <!-- Isi List Dropdown (Muncul saat diklik) -->
+                                            <div x-show="dropdownOpen" x-cloak
+                                                x-transition:enter="transition ease-out duration-100"
+                                                x-transition:enter-start="transform opacity-0 scale-95"
+                                                x-transition:enter-end="transform opacity-100 scale-100"
+                                                x-transition:leave="transition ease-in duration-75"
+                                                x-transition:leave-start="transform opacity-100 scale-100"
+                                                x-transition:leave-end="transform opacity-0 scale-95"
+                                                class="absolute left-0 mt-1 w-44 rounded-md bg-white shadow-xl ring-1 ring-black ring-opacity-5 z-[100] py-1">
+
+                                                <!-- Looping pilihan ikon -->
+                                                <template x-for="opt in iconList" :key="opt.val">
+                                                    <button type="button" @click="rule.icon = opt.val; dropdownOpen = false"
+                                                        class="w-full flex items-center gap-3 px-3 py-2 text-left text-xs text-slate-700 hover:bg-maroon-50 hover:text-maroon-700 transition-colors">
+                                                        <div class="flex h-7 w-7 items-center justify-center rounded bg-slate-100 text-slate-500">
+                                                            <i :class="opt.val" class="text-sm"></i>
+                                                        </div>
+                                                        <span x-text="opt.label" class="font-semibold"></span>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                        <!-- Input Title & Desc -->
+                                        <div class="w-full space-y-2">
+                                            <input type="text" x-model="rule.title" :name="`rules[${index}][title]`" required placeholder="Judul (Misal: Kertas & Margin)" class="w-full rounded-md border border-slate-200 px-3 py-2 text-xs focus:border-maroon-400 focus:outline-none focus:ring-1 focus:ring-maroon-100">
+                                            <textarea x-model="rule.description" :name="`rules[${index}][description]`" required rows="2" placeholder="Deskripsi ketentuan..." class="w-full rounded-md border border-slate-200 px-3 py-2 text-xs focus:border-maroon-400 focus:outline-none focus:ring-1 focus:ring-maroon-100"></textarea>
+                                        </div>
+                                        <!-- Tombol Hapus -->
+                                        <button type="button" @click="removeRule(index)" class="text-slate-400 hover:text-red-500 p-1" title="Hapus ketentuan ini">
+                                            <i class="fa-solid fa-trash-can text-sm"></i>
+                                        </button>
+                                    </div>
+                                </template>
+                                <template x-if="form.rules.length === 0">
+                                    <p class="text-xs text-slate-400 italic text-center py-2">Belum ada ketentuan tambahan. Klik tombol di atas untuk menambahkan.</p>
+                                </template>
+                            </div>
+                        </div>
+
                     </div>
                 </form>
 
